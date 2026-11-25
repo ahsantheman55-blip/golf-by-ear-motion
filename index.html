@@ -1,0 +1,1119 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Golf by Ear: Motion Edition</title>
+<link rel="icon" href="data:,">
+<style>
+:root{color-scheme:dark light}
+body{font:18px/1.5 -apple-system,system-ui,sans-serif;margin:0;background:#10301c;color:#f4f4ec}
+main{max-width:46rem;margin:0 auto;padding:1rem}
+h1{font-size:1.6rem;margin:.3rem 0} h2{font-size:1.25rem;margin:1.6rem 0 .5rem;border-top:2px solid #3c6b4a;padding-top:.8rem}
+button,select,input[type=text]{font:inherit;min-height:48px;border-radius:12px;border:2px solid #cfe8d2;background:#1d4a2c;color:#fff;padding:.4rem .8rem;margin:.25rem .2rem}
+button{min-width:48px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation}
+button[aria-pressed=true]{background:#f2d64b;color:#10301c;font-weight:700}
+button:focus-visible,#pad:focus-visible,select:focus-visible,input:focus-visible{outline:4px solid #ffd400;outline-offset:2px}
+#pad{display:flex;align-items:center;justify-content:center;text-align:center;min-height:42vh;border:3px dashed #cfe8d2;border-radius:24px;margin:.6rem 0;font-size:1.4rem;background:#14402a;
+ touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#actBtn{display:block;width:100%;min-height:72px;font-size:1.4rem;font-weight:700;background:#2f6d43}
+#status{min-height:3em;background:#0b2414;border-radius:12px;padding:.6rem .8rem}
+.row{display:flex;flex-wrap:wrap}
+fieldset{border:2px solid #3c6b4a;border-radius:12px;margin:.6rem 0} label{display:inline-flex;align-items:center;min-height:48px;margin-right:1rem}
+input[type=checkbox],input[type=radio]{width:28px;height:28px;margin-right:.5rem}
+.small{font-size:.95rem}
+.big3 button{flex:1 1 30%;min-height:64px;font-size:1.15rem;font-weight:700}
+button[role=switch][aria-checked=true]{border-color:#f2d64b}
+</style>
+</head>
+<body>
+<main>
+<h1>Golf by Ear: Motion Edition</h1>
+<p>An audio golf game for blind and visually impaired players, and anyone else. In this Motion Edition you turn your body to face the flag, swing the phone like a club, putt with it like a pendulum, and walk to your ball. Tap swing and every button still work. Sounds are made by your phone as you play; there are no recordings.</p>
+<button id="soundBtn">Start sound and speech</button>
+<button id="motionBtn">Turn on motion controls (the phone asks: choose Allow)</button>
+<p id="status" role="status" aria-live="off">Welcome. Tap Start sound and speech, then choose a course in New round.</p>
+
+<section aria-labelledby="h-play">
+<h2 id="h-play">Play</h2>
+<div class="row big3">
+<button id="flagBtn">Where is the flag</button><button id="clubNext">Next club</button><button id="recentreBtn">Recentre</button>
+</div>
+<button id="actBtn">Swing</button>
+<p id="bstat" class="small">Motion controls off.</p>
+<div id="pad" role="button" tabindex="0" aria-label="Swing pad. Press and hold to swing.">Swing pad</div>
+<h3 id="h-clubs">Clubs</h3>
+<div class="row" role="group" aria-label="Club">
+<button id="club-driver" data-club="driver" aria-pressed="true">Driver</button>
+<button id="club-iron" data-club="iron" aria-pressed="false">Iron</button>
+<button id="club-wedge" data-club="wedge" aria-pressed="false">Wedge</button>
+<button id="club-putter" data-club="putter" aria-pressed="false">Putter</button>
+<button id="clubPrev">Previous club</button>
+</div>
+<h3 id="h-info">Aim and information</h3>
+<div class="row">
+<button id="aimL">Aim left</button><button id="aimR">Aim right</button>
+<button id="infoBtn">Where am I</button><button id="windBtn">Wind</button><button id="hazBtn">Hazards ahead</button>
+<button id="breakBtn">Read the green</button><button id="scoreBtn">Score</button><button id="repeatBtn">Repeat last message</button><button id="cancelBtn">Cancel swing</button>
+</div>
+</section>
+
+<section aria-labelledby="h-motion">
+<h2 id="h-motion">Motion controls</h2>
+<p id="mstat" class="small">Motion controls are off.</p>
+<button id="mMotion" role="switch" aria-checked="false">Motion controls, all together. Key M</button>
+<button id="mAim" role="switch" aria-checked="true">Aim by turning to face the flag</button>
+<button id="mSwing" role="switch" aria-checked="true">Swing with the phone</button>
+<button id="mPutt" role="switch" aria-checked="true">Putt with the phone</button>
+<button id="mFlick" role="switch" aria-checked="true">Flick the wrist to change club</button>
+<button id="mAssist" role="switch" aria-checked="true">Aim assist: nearly on the flag counts as dead on</button>
+<label for="walk">Walk to your ball after each shot</label>
+<select id="walk"><option value="off">Off: go straight to the ball</option><option value="short" selected>Short walk: 3 to 6 steps</option><option value="long">Long walk: up to 12 steps</option></select>
+<label for="sens">Swing sensitivity</label>
+<select id="sens"><option value="low">Low: a long backswing and a strong strike</option><option value="med" selected>Medium</option><option value="high">High: a short backswing and a gentle strike are enough</option></select>
+<label for="psens">Putting stroke</label>
+<select id="psens"><option value="low">Long strokes</option><option value="med" selected>Medium strokes</option><option value="high">Short strokes: small movements putt further</option></select>
+<label for="stepSens">Step sensitivity</label>
+<select id="stepSens"><option value="low">Low: firm steps</option><option value="med" selected>Medium</option><option value="high">High: soft steps count</option></select>
+<label for="holes">Which way the holes point</label>
+<select id="holes"><option value="varied" selected>Each hole points a different way, up to 55 degrees either side</option><option value="straight">Every hole starts straight ahead</option></select>
+<fieldset><legend>Sound frame</legend>
+<label><input type="radio" name="frame" value="tank" checked> Sounds turn with you: the flag moves to the middle as you face it (best for one speaker or earphones)</label>
+<label><input type="radio" name="frame" value="fixed"> Sounds stay put in the room: for stereo speakers you face</label>
+</fieldset>
+<fieldset><legend>Turning is measured by</legend>
+<label><input type="radio" name="hsrc" value="gyro" checked> The gyroscope (smooth, drifts slowly: recentre now and then)</label>
+<label><input type="radio" name="hsrc" value="compass"> The compass (no drift, upset by speaker magnets)</label>
+</fieldset>
+<h3 id="h-range">Motion training range</h3>
+<p class="small">Three short steps: aim at a flag three times, three practice swings, and one putt. Nothing is scored.</p>
+<button id="rangeBtn">Start the motion training range. Key T</button>
+<div id="rangeCtl" hidden>
+<p id="rangeText"></p>
+<button id="rangeNext">Skip to the next step</button>
+<button id="rangeStop">Leave the range</button>
+</div>
+</section>
+
+<section aria-labelledby="h-new">
+<h2 id="h-new">New round</h2>
+<label for="course">Course</label>
+<select id="course"><option value="meadow">Meadow Park, 9 holes, par 36</option><option value="history">Fairways of History, 9 holes, par 37</option><option value="grand">Grand Tour, both courses, 18 holes, par 73</option></select>
+<p id="courseAbout" class="small"></p>
+<label for="np">Players</label>
+<select id="np"><option value="1">1 player</option><option value="2">2 players</option><option value="3">3 players</option><option value="4">4 players</option></select>
+<div id="names">
+<label>Player 1 name <input type="text" id="name1" autocomplete="off"></label>
+<label>Player 2 name <input type="text" id="name2" autocomplete="off"></label>
+<label>Player 3 name <input type="text" id="name3" autocomplete="off"></label>
+<label>Player 4 name <input type="text" id="name4" autocomplete="off"></label>
+</div>
+<button id="startBtn">Start round</button>
+<button id="resumeBtn" disabled>Resume round</button>
+</section>
+
+<section aria-labelledby="h-set">
+<h2 id="h-set">Settings</h2>
+<label><input type="checkbox" id="soundOn" checked> Sound on</label>
+<label><input type="checkbox" id="hapticsOn" checked> Vibration on</label>
+<p id="hapticNote" class="small"></p>
+<fieldset><legend>Sound output</legend>
+<label><input type="radio" name="out" value="stereo" checked> Stereo: left and right</label>
+<label><input type="radio" name="out" value="mono"> Mono: for one speaker or listening from another room</label>
+</fieldset>
+<label for="rate">Speech speed</label>
+<select id="rate"><option value="0.8">Slow</option><option value="1" selected>Normal</option><option value="1.2">Fast</option><option value="1.4">Very fast</option></select>
+<label for="msgs">Messages read by</label>
+<select id="msgs"><option value="voice" selected>The game's voice</option><option value="sr">VoiceOver or my screen reader</option><option value="both">Both</option></select>
+<label for="diff">Difficulty</label>
+<select id="diff"><option value="easy">Easy: timing errors count half</option><option value="normal" selected>Normal</option><option value="hard">Hard</option></select>
+<label for="hand">I play</label>
+<select id="hand"><option value="right" selected>Right-handed</option><option value="left">Left-handed</option></select>
+<label><input type="checkbox" id="hints" checked> Putting hints: suggested aim and tap gap</label>
+<label><input type="checkbox" id="intros" checked> Spoken history at the start of each history hole</label>
+<label><input type="checkbox" id="autoClub" checked> Pick the suggested club for me after each shot</label>
+</section>
+
+<section aria-labelledby="h-card">
+<h2 id="h-card">Scorecard</h2>
+<p id="cardNone">No holes played yet.</p>
+<ol id="card"></ol>
+<p id="best"></p>
+</section>
+
+<section aria-labelledby="h-help">
+<h2 id="h-help">How to play</h2>
+<h3>Full swing, tap style</h3>
+<p>Press and hold the pad or the Swing button. A tone rises as you take the club back. About one second is a full swing, and a click tells you when you reach it. Let go when the tone is high enough. Shorter holds give shorter shots. Then you hear three beats: tick, tick, TOCK. Tap on the TOCK. Tap early and the ball curves left; tap late and it curves right. Left-handed players get the mirror image. If you miss the beats entirely, no stroke is counted.</p>
+<p>With VoiceOver you can double tap and hold the pad. Or double tap the Swing button once to start the backswing, double tap again to stop it, then double tap on the TOCK.</p>
+<h3>Motion: getting started</h3>
+<p>Press Turn on motion controls and choose Allow when the phone asks. The way you face then is 12 o'clock. Try the motion training range first. Hold on tight, use a wrist strap if you have one, and keep clear of people, pets and furniture.</p>
+<h3>Motion: aiming by turning</h3>
+<p>A bell rings from the flag. Turn your body, with the phone held in front of you, until the bell sits in the middle. When you are on line you hear a little rising chime and then a steady soft tone, and the bell rings more slowly. The closer you are, the faster the bell rings. If the bell sounds muffled, the flag is behind you. Your aim follows the way you face until you start your swing; then it is locked. Where is the flag, or key F, tells you the clock bearing, like "The flag is at 2 o'clock". With aim assist on, nearly on the flag counts as dead on. Each hole points a different way in your room, so you will turn as you go round; a shot that goes right leaves the flag a little to your left. On the green, turning moves the putt gently: about 3 degrees of turning for 1 degree of putt. With putting hints on, a soft double tick tells you when you face the suggested line for the break. The break rumble comes from the downhill side, wherever you face.</p>
+<h3>Motion: swinging</h3>
+<p>Hold the phone upright in both hands like a golf grip, screen towards you. Keep still until you hear two quick beeps. Take the phone back slowly: a tone rises as you go, and a click tells you that you have reached a full swing. Then swing through with a sharp strike. The length of your backswing sets the power, and a firm strike adds a little. The time from the top to the strike sets the curve: about a quarter of a second is straight, a rushed downswing pulls the ball left, and a slow one pushes it right. Turning your body never starts a swing. If no strike comes, no stroke is counted. To change club, flick your wrist sharply, twisting the phone one way for the next club and the other way to go back, or use Next club. You can still use tap swing on the pad or the Swing button at any time.</p>
+<h3>Motion: putting</h3>
+<p>With the putter, let the phone hang in both hands like a putter. Keep still for the two beeps, swing it back gently while the tone rises, then forward through where you started. The longer the backstroke, the further the ball rolls. Read the green plays the pace tone for the suggested putt. Two taps on the pad still work as before.</p>
+<h3>Motion: walking the course</h3>
+<p>After a shot you can walk a few steps to your ball. You hear your footsteps on grass or sand, and the sounds of the course pass by. When you arrive you are told your lie and distance. Jab the phone, press Skip the walk, or choose Off in Motion controls to skip it. When a hole is finished, a jab of the phone goes on to the next player or hole.</p>
+<h3>Motion: recentring</h3>
+<p>Press Recentre, key C, or put the phone face down for a second and pick it up: the way you face becomes straight ahead again. Do it if the flag seems to drift.</p>
+<h3>Putting</h3>
+<p>Choose the putter. Tap once to start the stroke, and tap again to strike. A short gap is a firm putt; a long gap is a gentle one. Soft clicks count quarter seconds between your taps, with a higher click every second. About a tenth of a second hits it a very long way; one second is about twenty feet on a flat green; one and a half seconds is about four feet. Leave it longer than two seconds and the putt is cancelled without a stroke.</p>
+<p>On the green, a low rumble comes from the side the ball will drift towards, and it gets louder on steeper slopes. Read the green tells you the distance, slope and break, and with putting hints on, the aim and gap to try.</p>
+<h3>Sounds to listen for</h3>
+<ul>
+<li>A faint steady tone is the wind: higher means into the wind, lower means it is helping, and it sits on the side the wind comes from. On the green the same tone tells you the grain: higher means into the grain, which is slower.</li>
+<li>The swish of the ball moves to the left or right, to where it will land.</li>
+<li>Landing: a thump on the fairway, a rustle in the rough, a gravelly scrape in sand, a splash in water, a soft thud on the green, a clack on a road.</li>
+<li>Rolling: a ticking roll that slows down as the ball slows. In the hole: a metal rattle and a clunk. A lip-out: a ping, a whirl and two soft buzzes.</li>
+</ul>
+<h3>Rules</h3>
+<p>Water costs one penalty stroke, and you drop beside it, no nearer the hole. Deep pot bunkers, like Hell Bunker and the Road Hole Bunker, only let you out with the wedge. After ten strokes on a hole you pick up and score ten. Aim left and Aim right move your aim in steps of five yards, or three inches on the green, and reset after every shot.</p>
+<h3>Vibration</h3>
+<p>Vibration works only where the browser allows it, such as Chrome on Android. Safari on iPhone does not let web pages vibrate, so every vibration also has a sound.</p>
+<h3>Keyboard keys</h3>
+<ul>
+<li>Space: hold to swing, or tap twice to putt. Escape: cancel the swing.</li>
+<li>1, 2, 3, 4: driver, iron, wedge, putter.</li>
+<li>Left and right arrows: aim.</li>
+<li>I: where am I. W: wind. H: hazards. G: read the green. S: score. R: repeat. N: next hole when a hole is finished.</li>
+<li>F or B: where is the flag. X: next club. Z: previous club. M: motion controls on or off. C: recentre. K: skip the walk. T: motion training range.</li>
+</ul>
+<h3>Playing together</h3>
+<p>Choose up to four players. Each player plays the whole hole in turn, and the game says whose turn it is. Pass the phone, or take turns at the keyboard. Your round is saved after every shot; if the page closes, use Resume round.</p>
+</section>
+
+<section aria-labelledby="h-courses">
+<h2 id="h-courses">The courses</h2>
+<p>Meadow Park is invented: a friendly parkland course for learning.</p>
+<p>Fairways of History has three holes based on the Old Course at St Andrews: the first, Burn, with the Swilcan Burn; the fourteenth, Long, with the Beardies and Hell Bunker; and the seventeenth, the Road Hole, with its bunker, road and wall. Then three holes in the style of Pinehurst Number 2, with crowned greens and sandy waste areas. The real holes are simplified; lengths and shapes are approximate.</p>
+<p>The last three holes are imagined. There has never been a golf course at El Alamein. These holes are set in the desert near the railway halt and the sea, as a way to remember the history of 1942. You hear wind, sand, the sea and, now and then, a distant steam train. There are no battle sounds.</p>
+</section>
+
+<section aria-labelledby="h-credits">
+<h2 id="h-credits">Sounds, credits and licence</h2>
+<p>Every sound is synthesised in your browser with the Web Audio API. No recorded sounds are used, so there are no sound credits to give. Speech uses your device's own voices.</p>
+<p>Golf by Ear was made for Ahsan Ali, who owns this code and may use, share, change and sell it. Motion Edition, version 1, November 2026. The motion basics come from Desert Tanks Motion Edition.</p>
+</section>
+</main>
+<script>
+/* Motion basics, taken unchanged from Desert Tanks Motion Edition: pure motion logic (no DOM), shared by the page and the Node tests.
+   Units: acceleration in m/s squared, time in seconds, angles in degrees (0 ahead, positive clockwise / to the right). */
+(function(G){
+'use strict';
+const GRAV=9.81, D2R=Math.PI/180;
+const norm=a=>((a%360)+360)%360, rel=a=>{ a=norm(a); return a>180?a-360:a; }, clamp=(v,a,b)=>v<a?a:v>b?b:v;
+/* Jab (forward thrust or shake) thresholds on linear acceleration, and step thresholds on the smoothed bounce. */
+const JAB={low:22,med:16,high:11};
+const STEP={low:1.6,med:1.1,high:0.75};
+const CFG={stepMinGap:0.22,     // fastest cadence counted: about 4.5 steps a second (brisk walking or jogging on the spot)
+  stepMaxGap:2.0, stopAfter:1.5, jabCooldown:1.0, walkingJabFactor:1.5, walkingWindow:0.7, stepCap:8.5, jabMuteSteps:0.6,
+  fullCadence:1.9,              // steps a second for the tank's full speed
+  minFrac:0.3};
+/* One detector for steps and jabs. feed() takes one sample and returns a list of events: {k:'step',t,cad} or {k:'jab',t,peak}. */
+function Detector(opt){ this.set(opt||{}); this.reset(); }
+Detector.prototype.set=function(o){ this.jabSens=o.jabSens||this.jabSens||'med'; this.stepSens=o.stepSens||this.stepSens||'med'; };
+Detector.prototype.reset=function(){ this.lp=null; this.grav=null; this.bounce=0; this.armed=true; this.lastStep=-99; this.steps=[]; this.lastJab=-99; this.muteSteps=-99; this.jabPeak=0; this.jabOpen=false; this.peakS=0; };
+/* s: {t, g:[x,y,z] acceleration including gravity, a:[x,y,z] optional acceleration without gravity} */
+Detector.prototype.feed=function(s){ const out=[]; const t=s.t; const g=s.g||[0,0,GRAV];
+  // gravity estimate (slow low-pass) and linear acceleration
+  if(!this.grav) this.grav=g.slice(); else for(let i=0;i<3;i++) this.grav[i]+=(g[i]-this.grav[i])*0.08;
+  const lin=s.a&&s.a.every(v=>typeof v==='number')?s.a:[g[0]-this.grav[0],g[1]-this.grav[1],g[2]-this.grav[2]];
+  const linMag=Math.hypot(lin[0],lin[1],lin[2]);
+  // ---- jab: a sharp spike far above anything walking makes ----
+  const walking=t-this.lastStep<CFG.walkingWindow;
+  const thr=JAB[this.jabSens]*(walking?CFG.walkingJabFactor:1);
+  if(linMag>CFG.stepCap) this.muteSteps=t;          // anything this violent is not a step
+  if(linMag>thr&&t-this.lastJab>CFG.jabCooldown){ this.lastJab=t; out.push({k:'jab',t,peak:linMag}); }
+  // ---- steps: bounce = |g| minus 1 g, smoothed, peak detection with hysteresis and debounce ----
+  const mag=Math.hypot(g[0],g[1],g[2])-GRAV; this.bounce+=(mag-this.bounce)*0.45;
+  const st=STEP[this.stepSens];
+  if(this.armed){ if(this.bounce>st){ this.armed=false; this.peakS=this.bounce; } }
+  else { if(this.bounce>this.peakS) this.peakS=this.bounce;
+    if(this.bounce<st*0.3){ this.armed=true; const gap=t-this.lastStep;
+      if(t-this.muteSteps>CFG.jabMuteSteps&&t-this.lastJab>CFG.jabMuteSteps&&gap>=CFG.stepMinGap&&this.peakS<CFG.stepCap){
+        this.lastStep=t; this.steps.push(t); if(this.steps.length>6) this.steps.shift(); out.push({k:'step',t,cad:this.cadence(t)}); } } }
+  return out; };
+/* steps per second over the recent steps (0 when stopped) */
+Detector.prototype.cadence=function(t){ const S=this.steps.filter(x=>t-x<4); if(t-this.lastStep>CFG.stopAfter||S.length<2) return S.length?1/CFG.stepMaxGap:0;
+  const gaps=[]; for(let i=1;i<S.length;i++){ const d=S[i]-S[i-1]; if(d<=CFG.stepMaxGap) gaps.push(d); } if(!gaps.length) return 0; return 1/(gaps.reduce((a,b)=>a+b,0)/gaps.length); };
+/* Walk-to-drive state: call step(t,cad) on each step, update(t) every frame. Returns 'go', 'stop' or null. */
+function Walk(){ this.moving=false; this.last=-99; this.cad=0; this.count=0; }
+Walk.prototype.step=function(t,cad){ this.last=t; this.cad=cad||this.cad; this.count++; if(!this.moving&&this.count>=2&&t-this.prev<CFG.stepMaxGap){ this.moving=true; this.prev=t; return 'go'; } this.prev=t; return null; };
+Walk.prototype.update=function(t){ if(this.moving&&t-this.last>CFG.stopAfter){ this.moving=false; this.count=0; this.cad=0; return 'stop'; } if(!this.moving&&t-this.last>CFG.stepMaxGap) this.count=0; return null; };
+Walk.prototype.frac=function(){ return clamp(this.cad/CFG.fullCadence,CFG.minFrac,1); };
+/* Heading (degrees clockwise) of the direction the phone points, from deviceorientation alpha, beta, gamma.
+   Uses the top edge when the phone is flat and the back when it is upright, so it works however he holds it. */
+function headingFromEuler(alpha,beta,gamma){ const a=(alpha||0)*D2R,b=(beta||0)*D2R,c=(gamma||0)*D2R;
+  const cA=Math.cos(a),sA=Math.sin(a),cB=Math.cos(b),sB=Math.sin(b),cG=Math.cos(c),sG=Math.sin(c);
+  // rotation matrix R=Rz(alpha)Rx(beta)Ry(gamma), world x east, y north, z up
+  const yE=-sA*cB, yN=cA*cB;                       // device top edge (y axis) in world
+  const zE=cA*sG+sA*sB*cG, zN=sA*sG-cA*sB*cG;      // device screen normal (z axis) in world
+  const vE=yE-zE, vN=yN-zN;                        // top edge plus the back of the phone
+  if(Math.hypot(vE,vN)<1e-6) return null; return norm(Math.atan2(vE,vN)/D2R); }
+/* Yaw relative to a calibrated forward, smoothed, and safe across the 359 to 0 wrap. */
+function Yaw(){ this.h0=null; this.y=0; this.raw=null; }
+Yaw.prototype.feed=function(h){ if(h==null||isNaN(h)) return this.y; this.raw=h; if(this.h0==null) this.h0=h; const target=rel(h-this.h0); const d=rel(target-this.y); this.y=rel(this.y+d*0.5); return this.y; };
+Yaw.prototype.recentre=function(){ if(this.raw!=null) this.h0=this.raw; this.y=0; };
+/* Which way sounds are panned. look: where he faces relative to the hull (turret mode), hullDrift: how far the hull has
+   turned away from the room's forward (hull mode). Returns the offset to subtract from a hull-relative bearing. */
+function frameOffset(o){ if(!o||!o.on) return 0; if(o.mode==='hull') return o.frame==='fixed'?-(o.hullDrift||0):0; return o.frame==='fixed'?0:(o.look||0); }
+function soundRel(r,o){ return rel(r-frameOffset(o)); }
+function clockOf(r){ let c=Math.round(norm(r)/30)%12; return c===0?12:c; }
+/* pick the contact nearest the way he faces, within a window; hysteresis so it does not flick between two */
+function pickByLook(list,look,cur,win){ win=win||12; let best=null,bd=1e9; for(const c of list){ const d=Math.abs(rel(c.rel-look)); if(d<bd){ bd=d; best=c; } }
+  if(cur){ const k=list.find(c=>c.id===cur); if(k&&Math.abs(rel(k.rel-look))<win*1.6&&!(best&&bd<4&&best.id!==cur)) return k.id; } if(!best||bd>win) return null; return best.id; }
+G.MOT={JAB,STEP,CFG,Detector,Walk,headingFromEuler,Yaw,frameOffset,soundRel,clockOf,pickByLook,rel,norm};
+})(typeof window!=='undefined'?window:globalThis);
+if(typeof module!=='undefined') module.exports=globalThis.MOT;
+
+</script>
+<script>
+/* Golf by Ear, Motion Edition: pure golf motion logic (no DOM, no audio), shared by the page and the Node tests.
+   Device axes follow the W3C DeviceMotionEvent: rotation vector w=[beta,gamma,alpha] in degrees a second about x, y, z;
+   linear acceleration in m/s squared; gravity is the slow average of acceleration including gravity.
+   Bearings are degrees clockwise from the room's straight ahead (set when he recentres). */
+(function(root){
+'use strict';
+const M=root.MOT||(typeof require!=='undefined'?require('./motion.js'):null);
+const D2R=Math.PI/180, hyp=Math.hypot, clamp=(v,a,b)=>v<a?a:v>b?b:v, rel=M.rel, norm=M.norm;
+const GM={};
+/* Rotation without its part about the vertical: turning your body (yaw) never counts as a swing. */
+GM.perp=function(w,g){ const gl=hyp(g[0],g[1],g[2]); if(!gl) return w.slice(); const u=[g[0]/gl,g[1]/gl,g[2]/gl], d=w[0]*u[0]+w[1]*u[1]+w[2]*u[2]; return [w[0]-d*u[0],w[1]-d*u[1],w[2]-d*u[2]]; };
+GM.wFromEvent=rr=>[(rr&&rr.beta)||0,(rr&&rr.gamma)||0,(rr&&rr.alpha)||0];
+
+/* ---------- full swing ----------
+   Hold still (address), take the phone back (rotation away from vertical; a rising tone), stop or reverse at the top,
+   then strike with a sharp forward jab. Backswing length sets the power; the jab strength trims it a little;
+   the time from the top to the strike sets the curve (too quick pulls left, too slow pushes right).
+   A quick twist of the wrist at address (a fast roll about the phone's long edge, over 360 degrees a second) is a flick: it changes club. */
+const SW={STILL:25,ADDR:.4,PRE:.16,PRE_ANG:40,MIN_BACK:22,PAUSE:.08,WIN:1.6,IDEAL:.28,FLICK:360,FLICK_FRAC:.8,LIN_STILL:2.5,
+  SENS:{low:{jab:20,start:60,full:190},med:{jab:15,start:45,full:150},high:{jab:10,start:35,full:110}}};
+GM.SW=SW;
+function SwingM(sens,o){ o=o||{}; this.k=SW.SENS[sens]||SW.SENS.med; this.flick=o.flick!==false; this.reset(); }
+SwingM.prototype.reset=function(){ this.ph='arm'; this.still=0; this.ang=0; this.ax=[0,0,0]; this.pz=0; this.power=0; this.tPre=0; this.tTop=0; this.lastFlick=-9; };
+SwingM.prototype.feed=function(t,dt,w,lin,g){ const ev=[], K=this.k, p=GM.perp(w,g||[0,0,9.81]), m=hyp(p[0],p[1],p[2]), lm=hyp(lin[0],lin[1],lin[2]);
+  if(this.ph==='done') return ev;
+  if(this.ph==='arm'){ if(m<SW.STILL&&lm<SW.LIN_STILL){ this.still+=dt; if(this.still>=SW.ADDR){ this.ph='addr'; ev.push({k:'address',t}); } } else this.still=0; return ev; }
+  if(this.ph==='addr'){ const wm=hyp(w[0],w[1],w[2]);
+    if(this.flick&&Math.abs(w[1])>=SW.FLICK&&Math.abs(w[1])>=SW.FLICK_FRAC*wm&&t-this.lastFlick>.8){ this.lastFlick=t; this.ph='arm'; this.still=0; ev.push({k:'flick',dir:Math.sign(w[1]),t}); return ev; }
+    if(m>K.start){ this.ph='pre'; this.tPre=t; this.ang=0; this.ax=[0,0,0]; } else return ev; }
+  if(this.ph==='pre'){ const wm=hyp(w[0],w[1],w[2]);
+    if(this.flick&&Math.abs(w[1])>=SW.FLICK&&Math.abs(w[1])>=SW.FLICK_FRAC*wm&&t-this.lastFlick>.8){ this.lastFlick=t; this.ph='arm'; this.still=0; ev.push({k:'flick',dir:Math.sign(w[1]),t}); return ev; }
+    this.ang+=m*dt; for(let i=0;i<3;i++) this.ax[i]+=p[i]*dt;
+    if(t-this.tPre>=SW.PRE||this.ang>=SW.PRE_ANG){ if(this.ang<SW.MIN_BACK*.5){ this.ph='addr'; return ev; } this.ph='back'; ev.push({k:'back',t,t0:this.tPre}); }
+    else { if(m<SW.STILL&&this.ang<SW.MIN_BACK){ this.ph='addr'; } return ev; } }
+  if(this.ph==='back'){ this.ang+=m*dt; for(let i=0;i<3;i++) this.ax[i]+=p[i]*dt; this.power=Math.min(this.ang/K.full,1.1);
+    const an=hyp(this.ax[0],this.ax[1],this.ax[2])||1, dot=(p[0]*this.ax[0]+p[1]*this.ax[1]+p[2]*this.ax[2])/an;
+    if(lm>=K.jab&&this.ang>SW.MIN_BACK){ this.ph='top'; this.tTop=t-SW.IDEAL*.6; ev.push({k:'top',power:this.power,t}); }
+    else if(dot<-K.start*.7){ this.ph='top'; this.tTop=t; ev.push({k:'top',power:this.power,t}); return ev; }
+    else { if(m<SW.STILL) this.pz+=dt; else this.pz=0;
+      if(this.pz>=SW.PAUSE){ if(this.ang<SW.MIN_BACK){ this.ph='arm'; this.still=0; ev.push({k:'abort',t}); return ev; } this.ph='top'; this.tTop=t; ev.push({k:'top',power:this.power,t}); return ev; }
+      ev.push({k:'level',power:this.power}); return ev; } }
+  if(this.ph==='top'){ if(lm>=K.jab&&t-this.tTop>=.04){ const dn=t-this.tTop; this.ph='done';
+      const strength=clamp(.9+.1*(lm-K.jab)/(.5*K.jab),.9,1);
+      ev.push({k:'contact',power:clamp(this.power,.05,1.1)*strength,strength,err:clamp((dn-SW.IDEAL)*.8,-.4,.4),down:dn,peak:lm,t}); }
+    else if(t-this.tTop>SW.WIN){ this.ph='done'; ev.push({k:'miss',t}); } }
+  return ev; };
+GM.SwingM=SwingM;
+
+/* ---------- putting stroke, like a pendulum ----------
+   Hold still, swing the phone back gently (rotation away from vertical, along one axis), then forward through the
+   starting point. The length of the backstroke sets the pace: a rising tone tells you how far. Turning your body does not count. */
+const PS={STILL:12,ADDR:.4,START:15,MIN:2.5,REV:12,BACKMAX:4,FWDMAX:2,HIT:.15,LIN_STILL:2.5,FULLFT:60,
+  SENS:{low:{full:55},med:{full:40},high:{full:28}}};
+GM.PS=PS;
+GM.angToFt=(ang,full)=>clamp(1.5+(PS.FULLFT-1.5)*Math.pow(Math.max(0,ang)/full,1.5),1.5,90);
+GM.ftToAng=(ft,full)=>full*Math.pow((clamp(ft,1.5,90)-1.5)/(PS.FULLFT-1.5),1/1.5);
+function PuttM(sens,o){ o=o||{}; this.full=(PS.SENS[sens]||PS.SENS.med).full; this.flick=o.flick!==false; this.lastFlick=-9; this.reset(); }
+PuttM.prototype.reset=function(){ this.ph='arm'; this.still=0; this.ang=0; this.axis=null; this.top=0; this.t0=0; this.tTop=0; };
+PuttM.prototype.feed=function(t,dt,w,lin,g){ const ev=[], p=GM.perp(w,g||[0,0,9.81]), m=hyp(p[0],p[1],p[2]), lm=hyp(lin[0],lin[1],lin[2]);
+  if(this.ph==='done') return ev;
+  if(this.ph==='arm'){ if(m<PS.STILL&&lm<PS.LIN_STILL){ this.still+=dt; if(this.still>=PS.ADDR){ this.ph='addr'; ev.push({k:'address',t}); } } else this.still=0; return ev; }
+  if(this.ph==='addr'){ const wm=hyp(w[0],w[1],w[2]);
+    if(this.flick&&Math.abs(w[1])>=SW.FLICK&&Math.abs(w[1])>=SW.FLICK_FRAC*wm&&t-this.lastFlick>.8){ this.lastFlick=t; this.ph='arm'; this.still=0; ev.push({k:'flick',dir:Math.sign(w[1]),t}); return ev; }
+    if(m>PS.START&&Math.abs(w[1])<SW.FLICK*.5){ this.ph='back'; this.axis=[p[0]/m,p[1]/m,p[2]/m]; this.ang=0; this.t0=t; ev.push({k:'back',t,t0:t}); } else return ev; }
+  const s=p[0]*this.axis[0]+p[1]*this.axis[1]+p[2]*this.axis[2];
+  if(this.ph==='back'){ this.ang+=s*dt; if(this.ang>this.top) this.top=this.ang;
+    if(s<-PS.REV){ if(this.top<PS.MIN){ this.ph='arm'; this.still=0; this.top=0; ev.push({k:'abort',t}); return ev; } this.ph='fwd'; this.tTop=t; ev.push({k:'top',ft:GM.angToFt(this.top,this.full),ang:this.top,t}); return ev; }
+    if(t-this.t0>PS.BACKMAX){ this.ph='arm'; this.still=0; this.top=0; ev.push({k:'abort',t,why:'long'}); return ev; }
+    ev.push({k:'level',ft:GM.angToFt(this.ang,this.full),ang:this.ang}); return ev; }
+  if(this.ph==='fwd'){ this.ang+=s*dt;
+    if(this.ang<=this.top*PS.HIT){ this.ph='done'; ev.push({k:'contact',ft:GM.angToFt(this.top,this.full),ang:this.top,fwd:t-this.tTop,t}); }
+    else if(t-this.tTop>PS.FWDMAX){ this.ph='done'; ev.push({k:'miss',t}); } }
+  return ev; };
+GM.PuttM=PuttM;
+
+/* ---------- where things are in the room ---------- */
+const HEAD=[0,35,-30,50,-45,20,-55,40,-15]; // each hole of nine points a new way, within 55 degrees of straight ahead
+GM.holeHeading=(h,mode)=>mode==='straight'?0:HEAD[h%9];
+GM.pinBearing=function(G,R,mode){ const H=G.hole(R),b=R.cur.ball; return norm(GM.holeHeading(R.h,mode)+Math.atan2(H.pin[0]-b.x,H.pin[1]-b.y)/D2R); };
+/* Aim from facing. off: degrees he faces right (+) or left (-) of the flag. Full shots: yards right of the pin. Putts: inches right of the hole,
+   with a gentler gain (turning 3 degrees moves the putt 1 degree) so small aims are possible. assist: degrees that count as dead on. */
+GM.PGAIN=3;
+GM.aimYards=(off,yd,assist)=>{ if(Math.abs(off)<=(assist||0)) return 0; return clamp(Math.round(yd*Math.tan(clamp(off,-80,80)*D2R)),-60,60); };
+GM.aimInches=(off,ft,assist)=>{ if(Math.abs(off)<=(assist||0)) return 0; return clamp(Math.round(ft*12*Math.tan(off/GM.PGAIN*D2R)),-72,72); };
+GM.facingForInches=(inch,ft)=>GM.PGAIN*Math.atan(inch/12/Math.max(ft,.5))/D2R;
+GM.facingForYards=(yd,dist)=>Math.atan(yd/Math.max(dist,1))/D2R;
+GM.panOf=r=>Math.sin(clamp(rel(r),-90,90)*D2R); // stereo pan of a relative bearing; behind you is told by a muffled sound and the clock
+GM.behind=r=>Math.abs(rel(r))>100;
+GM.clockWords=r=>{ const c=M.clockOf(r); return c+' o\'clock'; };
+/* the downhill side of the putt in the room: the break pulls the ball to the right of the line when side is +1 */
+GM.breakBearing=(pinB,side)=>norm(pinB+90*(side||0));
+/* walking to the ball: steps to take, and sounds placed beside the path for the ambience to move past */
+GM.walkSteps=(yd,mode)=>mode==='off'?0:clamp(Math.round(yd/40)+2,3,mode==='long'?12:6);
+GM.walkPlan=function(G,R,from,to,steps){ const H=G.hole(R),dx=to.x-from.x,dy=to.y-from.y,L=hyp(dx,dy)||1,u=[dx/L,dy/L],r=[u[1],-u[0]],out=[];
+  for(const f of H.f){ const cx=f.cx!=null?f.cx:(f.x0+f.x1)/2, cy=f.cy!=null?f.cy:(f.y0+f.y1)/2; let px=cx-from.x,py=cy-from.y; let al=px*u[0]+py*u[1],lt=px*r[0]+py*r[1];
+    if(f.x0!=null&&f.x1-f.x0>120){ lt=clamp(lt,-40,40); } if(al<-10||al>L+20||Math.abs(lt)>70) continue; out.push({k:f.t,name:f.name,al:clamp(al,0,L),lt}); }
+  const amb=H.amb||'parkland'; [[.35,-1],[.75,1]].forEach(([fr,s])=>out.push({k:'amb',amb,al:L*fr,lt:s*(18+((R.h*7)%11))}));
+  out.sort((a,b)=>a.al-b.al); return {len:L,steps,per:L/Math.max(1,steps),objs:out}; };
+/* bearing of a path object relative to the way he walks, after walking w yards */
+GM.objRel=(o,w)=>Math.atan2(o.lt,o.al-w)/D2R;
+if(typeof module!=='undefined'&&module.exports) module.exports=GM; else root.GOLFM=GM;
+})(typeof window!=='undefined'?window:globalThis);
+
+</script>
+<script>
+/* Golf by Ear: pure game logic. No DOM, no audio. Deterministic (seeded). Works in the browser (window.GOLF) and in Node (module.exports). */
+(function(root){
+'use strict';
+const G={};
+const clamp=(v,a,b)=>v<a?a:v>b?b:v; G.clamp=clamp;
+const hyp=Math.hypot;
+function rnd(R){ let t=(R.rs=(R.rs+0x6D2B79F5)>>>0); t=Math.imul(t^(t>>>15),t|1); t^=t+Math.imul(t^(t>>>7),t|61); return ((t^(t>>>14))>>>0)/4294967296; }
+function gauss(R){ let u=0; while(!u) u=rnd(R); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*rnd(R)); }
+G.rnd=rnd; G.gauss=gauss;
+
+/* ---------- clubs and lies ---------- */
+const CLUBS={
+ driver:{id:'driver',name:'driver',full:240,disp:2.0,roll:20,hang:3.0,wind:1},
+ iron:{id:'iron',name:'iron',full:165,disp:1.5,roll:9,hang:2.6,wind:.9},
+ wedge:{id:'wedge',name:'wedge',full:100,disp:1.0,roll:3,hang:2.3,wind:1.1},
+ putter:{id:'putter',name:'putter',full:0}};
+G.CLUBS=CLUBS; G.CLUB_IDS=['driver','iron','wedge','putter'];
+const LIE={ // f: distance factor per club, d: extra spread in degrees, roll: how far the ball runs after landing, pd: putter drag
+ tee:{f:{driver:1,iron:1,wedge:1},d:0,roll:1,pd:3},
+ fairway:{f:{driver:.9,iron:1,wedge:1},d:0,roll:1,pd:3},
+ rough:{f:{driver:.72,iron:.85,wedge:.9},d:1,roll:.35,pd:8},
+ deep:{f:{driver:.45,iron:.6,wedge:.75},d:2.5,roll:.1,pd:20},
+ bunker:{f:{driver:.3,iron:.55,wedge:.85},d:1.5,roll:0,pd:14},
+ waste:{f:{driver:.65,iron:.85,wedge:.9},d:1,roll:.3,pd:7},
+ road:{f:{driver:.9,iron:.95,wedge:.95},d:.5,roll:2,pd:1.5},
+ green:{f:{driver:.9,iron:.95,wedge:1},d:0,roll:.7,pd:1},
+ water:{f:{driver:0,iron:0,wedge:0},d:0,roll:0,pd:99}};
+G.LIE=LIE;
+const THEME={ // spoken names for plain ground on each kind of course
+ parkland:{tee:'the tee',fairway:'the fairway',rough:'the rough',deep:'deep rough',green:'the green'},
+ links:{tee:'the tee',fairway:'the fairway',rough:'the rough',deep:'gorse and heather',green:'the green'},
+ sandhills:{tee:'the tee',fairway:'the fairway',rough:'wiregrass and sand',deep:'the pine woods',green:'the green'},
+ desert:{tee:'the tee',fairway:'the hard-packed fairway',rough:'loose sand',deep:'stony desert scrub',green:'the green'}};
+const KIND={water:'water',bunker:'bunker',waste:'sandy waste',road:'road',deep:'trouble',rough:'rough'};
+
+/* ---------- courses ----------
+ Each hole: tee at (0,0), yards. y runs from tee towards the green, x is to the right.
+ c: fairway centre line points [y,x]; fw: fairway width; gr: green radius; pin: [x,y];
+ g: green {s:[sx,sy] downhill slope as a fraction, crown: dome strength, grain:[gx,gy]};
+ f: features, rect {x0,x1,y0,y1} or ellipse {cx,cy,rx,ry}; amb: ambience. */
+const B=(cx,cy,rx,ry,name,deep)=>({t:'bunker',cx,cy,rx,ry,name,deep:!!deep});
+const W=(o)=>Object.assign({t:'water'},o);
+const MEADOW=[
+ {name:'Welcome',par:4,len:360,pin:[0,360],fw:50,gr:16,g:{s:[.012,0],grain:[0,.5]},f:[B(26,230,8,10,'a fairway bunker'),B(-21,355,6,8,'a greenside bunker')]},
+ {name:'Duck Pond',par:3,len:150,pin:[0,150],fw:30,fwFrom:130,gr:15,g:{s:[-.015,.01],grain:[.5,0]},f:[W({cx:0,cy:110,rx:30,ry:17,name:'the duck pond'})]},
+ {name:'Long Meadow',par:5,len:500,pin:[-20,500],c:[[0,0],[250,0],[500,-20]],fw:55,gr:18,g:{s:[0,-.012],grain:[0,-.5]},f:[B(-28,260,8,12,'a fairway bunker'),W({x0:-200,x1:200,y0:380,y1:388,name:'the brook'})]},
+ {name:'Oak Corner',par:4,len:390,pin:[40,390],c:[[0,0],[230,0],[390,40]],fw:45,gr:16,g:{s:[.012,-.008],grain:[.4,.3]},f:[B(24,235,10,10,'the corner bunker'),B(20,385,5,7,'a greenside bunker'),B(60,392,5,7,'a greenside bunker')]},
+ {name:'Short Hop',par:4,len:340,pin:[0,340],fw:45,gr:14,g:{s:[-.02,0],grain:[0,.4]},f:[B(-14,256,9,6,'the cross bunkers'),B(14,256,9,6,'the cross bunkers')]},
+ {name:'Waterside',par:3,len:170,pin:[0,170],fw:30,fwFrom:140,gr:16,g:{s:[.018,0],grain:[-.4,0]},f:[W({x0:-90,x1:-19,y0:95,y1:190,name:'the lake'})]},
+ {name:'The Ridge',par:4,len:410,pin:[0,410],fw:50,gr:17,g:{s:[0,.015],grain:[0,.5]},f:[B(-24,230,8,10,'a fairway bunker'),B(26,250,8,10,'a fairway bunker')]},
+ {name:'Lake View',par:5,len:520,pin:[0,520],fw:50,gr:18,g:{s:[-.01,-.01],grain:[.3,-.3]},f:[W({x0:32,x1:200,y0:150,y1:420,name:'the lake'}),B(-16,505,6,8,'a greenside bunker')]},
+ {name:'Clubhouse',par:4,len:380,pin:[0,380],fw:55,gr:18,g:{s:[.008,.012],grain:[0,.5]},f:[B(-27,240,8,10,'a fairway bunker'),B(18,372,6,8,'a greenside bunker')]}];
+MEADOW.forEach(h=>h.amb='parkland');
+const HIST=[
+ {name:'Burn, the first at St Andrews',par:4,len:370,pin:[0,365],fw:90,gr:16,amb:'links',wind:[6,20],g:{s:[.006,-.01],grain:[0,.3]},
+  f:[W({x0:-200,x1:200,y0:333,y1:341,name:'the Swilcan Burn'})],
+  intro:"The Old Course at St Andrews, on the coast of Fife in Scotland, often called the home of golf. Golf has been played on these links since at least the fifteenth century, and a charter of 1552 protected the townspeople's right to play here. The first hole, Burn, shares one enormous fairway with the eighteenth, so this is one of the widest drives in golf. The danger is the Swilcan Burn, a little stream running right across the front of the green. On the eighteenth, the old stone Swilcan Bridge crosses it."},
+ {name:'Long, the fourteenth at St Andrews',par:5,len:560,pin:[0,560],fw:50,gr:20,amb:'links',wind:[6,20],g:{s:[.01,.012],grain:[.3,.3]},
+  f:[B(-20,210,6,6,'the Beardies bunkers'),B(-25,226,6,6,'the Beardies bunkers'),{t:'deep',x0:45,x1:200,y0:0,y1:600,name:'the stone wall on the right'},B(-5,450,18,9,'Hell Bunker',true)],
+  intro:"The fourteenth on the Old Course is called Long. From the championship tee it is over six hundred yards; this version is a little shorter. Off the tee, a cluster of bunkers called the Beardies waits on the left, and a stone wall runs down the right. Beyond the fairway known as the Elysian Fields lies Hell Bunker, huge and deep, about a hundred yards short of the green. In the 1995 Open, Jack Nicklaus needed four shots to get out of it, and took ten on the hole. Deep bunkers here need the wedge."},
+ {name:'the Road Hole, the seventeenth at St Andrews',par:4,len:450,pin:[8,450],c:[[0,0],[240,12],[450,8]],fw:45,gr:13,amb:'links',wind:[6,20],g:{s:[-.012,-.006],grain:[-.3,0]},
+  f:[{t:'deep',x0:42,x1:200,y0:120,y1:300,name:'the Old Course Hotel grounds'},B(-6,439,5,5,'the Road Hole Bunker',true),{t:'road',x0:-60,x1:60,y0:465,y1:472,name:'the road behind the green'},{t:'deep',x0:-60,x1:60,y0:472,y1:520,name:'the stone wall behind the road'}],
+  intro:"The seventeenth, the Road Hole, perhaps the most famous par four in golf. The drive is played over the corner of the Old Course Hotel, where railway sheds once stood. The green is long and narrow. Guarding its front left is the deep Road Hole Bunker. In the 1978 Open, Tommy Nakajima putted into it, needed four shots to escape, and took nine; it has been called the Sands of Nakajima ever since. Behind the green lie a road and a stone wall, and both are in play."},
+ {name:'the first sandhills hole at Pinehurst Number 2',par:4,len:400,pin:[0,400],fw:50,gr:15,amb:'sandhills',wind:[0,10],g:{s:[0,.005],crown:.03,grain:[.3,.3]},
+  f:[{t:'waste',x0:-95,x1:-30,y0:120,y1:330,name:'the sandy waste area on the left'},{t:'waste',cx:42,cy:240,rx:15,ry:50,name:'the sandy waste area on the right'},B(-17,390,5,7,'a greenside bunker')],
+  intro:"Pinehurst Number 2, in the sandhills of North Carolina. It was laid out by Donald Ross, a Scot from Dornoch, and opened in 1907; Ross kept refining it until his death in 1948. It is famous for crowned greens, domed like upturned saucers, which shed weak approach shots off their edges. In 2010 and 2011, Bill Coore and Ben Crenshaw restored the course, taking out acres of watered rough and bringing back sandy waste areas dotted with wiregrass. Aim for the middle of the green."},
+ {name:'the short hole at Pinehurst Number 2',par:3,len:190,pin:[0,190],fw:30,fwFrom:160,gr:13,amb:'sandhills',wind:[0,10],g:{s:[.004,0],crown:.035,grain:[0,.4]},
+  f:[{t:'waste',cx:0,cy:138,rx:24,ry:14,name:'the sandy waste area'},B(-17,188,5,7,'a greenside bunker'),B(17,186,5,7,'a greenside bunker')],
+  intro:"In the 1999 US Open here, Payne Stewart holed a putt of about fifteen feet on the final green to win by one stroke from Phil Mickelson. Four months later he died in an aircraft accident. This short hole asks for one well-judged iron to a crowned green; anything weak rolls back off it."},
+ {name:'the long hole at Pinehurst Number 2',par:5,len:520,pin:[0,520],fw:50,gr:16,amb:'sandhills',wind:[0,10],g:{s:[-.004,.004],crown:.03,grain:[.3,0]},
+  f:[{t:'waste',x0:30,x1:110,y0:200,y1:480,name:'the long sandy waste area on the right'},B(-26,290,7,10,'a fairway bunker'),B(18,512,5,7,'a greenside bunker')],
+  intro:"In 2014, Pinehurst Number 2 became the first course to stage the men's and women's US Opens in back-to-back weeks. Martin Kaymer won the men's championship by eight strokes, and Michelle Wie won the women's. A long sandy waste area runs down the right of this hole."},
+ {name:'the Railway Halt, an imagined hole at El Alamein',par:4,len:380,pin:[0,380],fw:45,gr:16,amb:'desert',wind:[8,22],g:{s:[.01,.006],grain:[0,0]},
+  f:[{t:'waste',x0:-90,x1:-26,y0:150,y1:320,name:'soft sand on the left'},B(22,250,10,8,'a hollow of soft sand'),B(-18,372,6,7,'a sand trap by the green')],
+  intro:"Now for three imagined holes. There has never been a golf course at El Alamein: these holes are invented, and only the history around them is real. El Alamein was a small railway halt on the coast of Egypt, about a hundred kilometres west of Alexandria. In the summer of 1942 the Eighth Army made its stand here, on a line between the sea to the north and the Qattara Depression to the south, a vast low basin of salt marsh and soft sand that armies could hardly cross. Expect wind and soft sand."},
+ {name:'Ruweisat Ridge, an imagined hole at El Alamein',par:3,len:175,pin:[0,175],fw:35,fwFrom:120,gr:14,amb:'desert',wind:[8,22],g:{s:[.02,0],grain:[0,0]},
+  f:[{t:'deep',x0:-90,x1:90,y0:62,y1:80,name:'the stony ridge'},{t:'waste',cx:-24,cy:160,rx:10,ry:18,name:'soft sand'},B(19,178,5,7,'a sand trap by the green')],
+  intro:"Ruweisat Ridge is a low, stony ridge running east to west through the middle of the Alamein position. In July 1942, during the First Battle of El Alamein, it was fiercely fought over; New Zealand and Indian troops were among those who fought there. On this imagined hole you play over the ridge to a green in the open desert. Again, this hole is invented."},
+ {name:'the Coast Road, an imagined hole at El Alamein',par:5,len:510,pin:[0,510],fw:50,gr:17,amb:'desert',sea:true,wind:[8,22],g:{s:[-.01,.008],grain:[0,0]},
+  f:[W({x0:-260,x1:-38,y0:-20,y1:560,name:'the Mediterranean'}),B(28,260,9,12,'soft sand on the right'),B(20,500,6,7,'a sand trap by the green')],
+  intro:"The last imagined hole runs beside the Mediterranean. The Second Battle of El Alamein began on the night of the 23rd of October 1942 with a huge artillery barrage, and ended in early November with Rommel's German and Italian army in retreat. Winston Churchill called it perhaps the end of the beginning. Near the town, the El Alamein War Cemetery, cared for by the Commonwealth War Graves Commission, holds more than seven thousand graves. The sea runs all down the left."}];
+const COURSES={
+ meadow:{id:'meadow',name:'Meadow Park',about:'A gentle, invented parkland nine for learning: wide fairways, a pond, a brook and a lake.',holes:MEADOW},
+ history:{id:'history',name:'Fairways of History',about:'Three holes themed on the Old Course at St Andrews, three on Pinehurst Number 2, and three imagined holes in the desert at El Alamein. The Alamein holes are invented; there has never been a golf course there.',holes:HIST},
+ grand:{id:'grand',name:'Grand Tour, eighteen holes',about:'Meadow Park then Fairways of History, back to back.',holes:MEADOW.concat(HIST)}};
+G.COURSES=COURSES;
+for(const h of MEADOW.concat(HIST)){ h.fwFrom=h.fwFrom||0; if(!h.c) h.c=[[0,0],[h.len,h.pin[0]]]; h.wind=h.wind||[0,12]; }
+
+/* ---------- terrain ---------- */
+function inside(f,x,y){ if(f.rx!=null){ const a=(x-f.cx)/f.rx,b=(y-f.cy)/f.ry; return a*a+b*b<=1; } return x>=f.x0&&x<=f.x1&&y>=f.y0&&y<=f.y1; }
+function fc(H,y){ const c=H.c; if(y<=c[0][0]) return c[0][1]; for(let i=1;i<c.length;i++) if(y<=c[i][0]){ const [y0,x0]=c[i-1],[y1,x1]=c[i]; return x0+(x1-x0)*(y-y0)/(y1-y0); } return c[c.length-1][1]; }
+const PRI={water:0,bunker:1,waste:2,road:3,deep:4};
+G.terrainAt=function(H,x,y){
+  let best=null; for(const f of H.f) if(inside(f,x,y)&&(!best||PRI[f.t]<PRI[best.t])) best=f;
+  if(best&&(best.t!=='deep'||hyp(x-H.pin[0],y-H.pin[1])>H.gr)) return {t:best.t,f:best};
+  if(hyp(x-H.pin[0],y-H.pin[1])<=H.gr) return {t:'green'};
+  if(y<12&&y>-6&&Math.abs(x)<8) return {t:'tee'};
+  const off=Math.abs(x-fc(H,y));
+  if(y>=H.fwFrom&&y<=H.len+H.gr&&off<=H.fw/2) return {t:'fairway'};
+  return {t:off<=H.fw/2+25?'rough':'deep'};
+};
+G.terrainName=function(H,T){ if(T.f&&T.f.name) return T.f.name; return (THEME[H.amb]||THEME.parkland)[T.t]||T.t; };
+
+/* ---------- rounds ---------- */
+G.newRound=function(cid,names,o){
+  o=o||{}; const C=COURSES[cid]; if(!C) throw new Error('no course '+cid);
+  const seed=(o.seed==null?(Date.now()%2147483647):o.seed)>>>0;
+  const R={v:1,cid,seed,rs:seed,diff:o.diff||'normal',hand:o.hand||'right',max:o.max||10,nh:C.holes.length,
+    players:names.map(n=>({name:n,sc:[]})),h:0,p:0,phase:'play',winds:[],log:[]};
+  const W0={rs:seed^0x5bd1e995};
+  C.holes.forEach(H=>{ const sp=Math.round(H.wind[0]+(H.wind[1]-H.wind[0])*rnd(W0)); const a=rnd(W0)*2*Math.PI; R.winds.push({x:+(sp*Math.sin(a)).toFixed(2),y:+(sp*Math.cos(a)).toFixed(2),sp}); });
+  G.startTurn(R); return R;
+};
+G.course=R=>COURSES[R.cid];
+G.hole=R=>COURSES[R.cid].holes[R.h];
+G.player=R=>R.players[R.p];
+G.startTurn=function(R){ R.cur={ball:{x:0,y:0},strokes:0,aim:0,pen:0,putts:0}; R.phase='play'; };
+G.lie=function(R){ const H=G.hole(R),b=R.cur.ball,T=G.terrainAt(H,b.x,b.y); return {t:T.t,f:T.f,name:G.terrainName(H,T)}; };
+G.toPin=function(R){ const H=G.hole(R),b=R.cur.ball,dx=H.pin[0]-b.x,dy=H.pin[1]-b.y,d=hyp(dx,dy)||1e-6; return {yd:d,ft:d*3,u:[dx/d,dy/d],r:[dy/d,-dx/d]}; };
+G.onGreen=R=>G.lie(R).t==='green';
+G.suggest=function(R){ const d=G.toPin(R).yd,l=G.lie(R).t;
+  if(l==='green') return 'putter';
+  if(d<=12&&(l==='fairway'||l==='road'||l==='tee')) return 'putter';
+  if(d<=115) return 'wedge'; if(d<=185||l==='bunker'||l==='deep') return (l==='bunker'&&d<=200)?'wedge':'iron';
+  return (l==='tee'||l==='fairway'||l==='road')?'driver':'iron'; };
+G.wind=function(R){ const w=R.winds[R.h],tp=G.toPin(R); const along=w.x*tp.u[0]+w.y*tp.u[1], cross=w.x*tp.r[0]+w.y*tp.r[1]; return {sp:w.sp,along,cross,head:-along}; };
+G.windWords=function(R){ const w=G.wind(R); if(w.sp<2) return 'Calm, almost no wind.';
+  const p=[]; const a=Math.abs(w.along),c=Math.abs(w.cross);
+  if(a>=w.sp*0.35) p.push(w.along<0?'against you':'helping you');
+  if(c>=w.sp*0.35) p.push(w.cross>0?'from the left':'from the right');
+  return 'Wind '+w.sp+' miles an hour, '+(p.join(' and ')||'gusting')+'.'; };
+const DIFF={easy:.5,normal:1,hard:1.5};
+function rot(v,deg){ const a=deg*Math.PI/180,c=Math.cos(a),s=Math.sin(a); return [v[0]*c+v[1]*s,-v[0]*s+v[1]*c]; } // positive turns to the right
+G.shapeName=function(a){ const x=Math.abs(a); if(x<1.5) return 'straight'; return a>0?(x<5?'fade':'slice'):(x<5?'draw':'hook'); };
+function dropOut(H,from,land){ // walk back along the line until dry, then two more yards
+  const dx=from.x-land.x,dy=from.y-land.y,d=hyp(dx,dy)||1; let k=0; for(;k<=d;k+=1){ const x=land.x+dx*k/d,y=land.y+dy*k/d; if(G.terrainAt(H,x,y).t!=='water') break; }
+  k=Math.min(d,k+2); return {x:land.x+dx*k/d,y:land.y+dy*k/d}; }
+
+G.fullShot=function(R,club,power,err,o){
+  o=o||{}; const H=G.hole(R),C=CLUBS[club],cur=R.cur,from={x:cur.ball.x,y:cur.ball.y},L=G.lie(R),lt=L.t,tp=G.toPin(R),w=G.wind(R);
+  if(club==='putter') throw new Error('use putt');
+  cur.strokes++; const res={kind:'full',club,from,lieFrom:lt,power};
+  const pw=clamp(power,.05,1.1),over=Math.max(0,pw-1),q=Math.abs(err),df=DIFF[R.diff]||1,hs=R.hand==='left'?-1:1;
+  res.qual=q<.04?'pure':q<.1?'good':q<.2?'off':'mishit';
+  if(L.f&&L.f.deep&&club!=='wedge'){ // a deep pot bunker: only a wedge gets out
+    cur.ball={x:from.x+tp.u[0],y:from.y+tp.u[1]}; Object.assign(res,{stuck:true,carry:0,total:1,ang:0,shape:'straight',pan:0,hang:.6,to:cur.ball,landT:'bunker'}); return G.afterShot(R,res); }
+  const distF=1-clamp(q-.04,0,.4)*.6;
+  const spreadA=(C.disp+(LIE[lt]?LIE[lt].d:0)+over*6)*(.6+.4*df);
+  const a=hs*err*40*df+gauss(R)*spreadA;
+  // aim: R.cur.aim yards right of the pin
+  const tx=H.pin[0]+tp.r[0]*cur.aim,ty=H.pin[1]+tp.r[1]*cur.aim,td=hyp(tx-from.x,ty-from.y)||1; const d0=[(tx-from.x)/td,(ty-from.y)/td];
+  const d=rot(d0,a),rd=[d[1],-d[0]];
+  const wAlong=w.along*(d[0]*tp.u[0]+d[1]*tp.u[1])>=0?w.along:w.along; // along the line to the pin
+  const windF=1+(wAlong>=0?.006:.01)*wAlong*C.wind;
+  let carry=C.full*(Math.min(pw,1)+over*.5)*(LIE[lt]?LIE[lt].f[club]:1)*distF*windF*(1+gauss(R)*.02);
+  carry=Math.max(1,carry);
+  const drift=w.cross*.45*carry/150*C.wind;
+  let land={x:from.x+d[0]*carry+rd[0]*drift,y:from.y+d[1]*carry+rd[1]*drift};
+  res.ang=a; res.shape=G.shapeName(a*hs); res.carry=carry; res.hang=clamp(C.hang*(.5+.5*Math.min(1,carry/C.full)),.8,3.2);
+  const fly=[land.x-from.x,land.y-from.y],fl=hyp(...fly)||1,dir=[fly[0]/fl,fly[1]/fl];
+  let T=G.terrainAt(H,land.x,land.y); res.landT=T.t; res.landName=G.terrainName(H,T);
+  let rest=land;
+  if(hyp(land.x-H.pin[0],land.y-H.pin[1])<.12){ res.holed=true; rest={x:H.pin[0],y:H.pin[1]}; }
+  else if(T.t==='water'){ res.water=T.f.name; }
+  else { // roll out
+    let roll=C.roll*Math.min(pw,1)*(LIE[T.t]?LIE[T.t].roll:0)*distF; if(wAlong>0) roll*=1+wAlong*.01;
+    let x=land.x,y=land.y; for(let s=0;s<roll;s+=.5){ const nx=x+dir[0]*.5,ny=y+dir[1]*.5; const t=G.terrainAt(H,nx,ny);
+      if(roll-s<=5&&hyp(nx-H.pin[0],ny-H.pin[1])<.1){ res.holed=true; x=H.pin[0]; y=H.pin[1]; break; }
+      x=nx; y=ny; if(t.t==='water'){ res.water=t.f.name; land={x,y}; break; } if(t.t==='bunker'||t.t==='deep') break; }
+    rest={x,y};
+    const g=H.g; if(!res.holed&&!res.water&&g.crown){ const rx=x-H.pin[0],ry=y-H.pin[1],r=hyp(rx,ry); if(r<=H.gr&&r>.55*H.gr){ const push=(r/H.gr-.55)*H.gr*.9*g.crown/.03; rest={x:x+rx/r*push,y:y+ry/r*push}; if(G.terrainAt(H,rest.x,rest.y).t!=='green') res.crownOff=true; } }
+  }
+  if(res.water){ cur.strokes++; cur.pen++; res.penalty=1; rest=dropOut(H,from,land); }
+  cur.ball=rest; res.to=rest; res.total=hyp(rest.x-from.x,rest.y-from.y);
+  const lat=(rest.x-from.x)*tp.r[0]+(rest.y-from.y)*tp.r[1]; res.lat=lat; res.pan=clamp(((land.x-from.x)*tp.r[0]+(land.y-from.y)*tp.r[1])/35,-1,1);
+  return G.afterShot(R,res);
+};
+G.afterShot=function(R,res){ const cur=R.cur; const L=G.lie(R); res.restT=L.t; res.restName=L.name; const tp=G.toPin(R); res.toPin=tp;
+  if(res.holed){ cur.ball={x:G.hole(R).pin[0],y:G.hole(R).pin[1]}; G.endHole(R,false); }
+  else if(cur.strokes>=R.max){ res.pickup=true; G.endHole(R,true); }
+  cur.aim=0; R.log.push({h:R.h,p:R.p,k:res.kind,club:res.club||'putter',holed:!!res.holed,pen:res.penalty||0}); if(R.log.length>400) R.log.shift(); return res; };
+G.endHole=function(R,pickup){ const pl=G.player(R); pl.sc[R.h]=pickup?R.max:R.cur.strokes; R.phase='holeDone'; R.cur.pickup=!!pickup; };
+G.advance=function(R){ if(R.phase!=='holeDone') return null;
+  if(R.p<R.players.length-1){ R.p++; G.startTurn(R); return 'player'; }
+  if(R.h<R.nh-1){ R.h++; R.p=0; G.startTurn(R); return 'hole'; }
+  R.phase='roundDone'; return 'end'; };
+
+/* ---------- putting ---------- */
+const A0=1.8, G57=32.17*5/7, CUP=2.125/12;
+G.gapToFt=function(gap){ const g=clamp(gap,.15,1.8); return 1.5+88.5*Math.pow((1.8-g)/1.65,2); };
+G.ftToGap=function(ft){ const f=clamp(ft,1.5,90); return 1.8-1.65*Math.sqrt((f-1.5)/88.5); };
+G.PUTT_GIVEUP=2.0;
+function slopeAt(H,px,py){ // px,py feet from the pin
+  const yx=px/3+H.pin[0],yy=py/3+H.pin[1]; if(G.terrainAt(H,yx,yy).t!=='green') return [0,0];
+  let sx=H.g.s[0],sy=H.g.s[1]; const c=H.g.crown||0; if(c){ const r=hyp(px,py)/3; if(r>.5){ const k=c*Math.min(1,r/H.gr); sx+=px/3/r*k; sy+=py/3/r*k; } } return [sx,sy]; }
+G.slopeAt=slopeAt;
+G.simPutt=function(H,start,aimIn,dFlat,o){ // start: feet from the pin
+  o=o||{}; const dx=-start.x,dy=-start.y,D=hyp(dx,dy)||1e-6,u=[dx/D,dy/D],r=[u[1],-u[0]];
+  const ax=r[0]*aimIn/12-start.x,ay=r[1]*aimIn/12-start.y,ad=hyp(ax,ay)||1; let v0=Math.sqrt(2*A0*Math.max(.1,dFlat));
+  let x=start.x,y=start.y,vx=ax/ad*v0,vy=ay/ad*v0,t=0,noCap=0; const out={samples:[],holed:false,lip:false,crossLat:null};
+  const gr=H.g.grain||[0,0]; let lastAlong=(x*u[0]+y*u[1]);
+  for(let i=0;i<4000;i++){ const v=hyp(vx,vy); if(v<.04){ break; }
+    const T=G.terrainAt(H,x/3+H.pin[0],y/3+H.pin[1]).t; if(T==='water'){ out.water=true; break; }
+    const mult=LIE[T]?LIE[T].pd:1; const gdot=(vx*gr[0]+vy*gr[1])/v; const dec=A0*mult*(1-.12*gdot*(T==='green'?1:0));
+    const s=slopeAt(H,x,y); const dt=.01;
+    let nvx=vx+(-dec*vx/v+G57*s[0])*dt, nvy=vy+(-dec*vy/v+G57*s[1])*dt;
+    if(nvx*vx+nvy*vy<=0){ vx=0; vy=0; break; }
+    const nx=x+nvx*dt,ny=y+nvy*dt;
+    // closest approach of this step to the cup
+    const sx=nx-x,sy=ny-y,sl=sx*sx+sy*sy; let k=sl?clamp(-(x*sx+y*sy)/sl,0,1):0; const cd=hyp(x+sx*k,y+sy*k);
+    const along=nx*u[0]+ny*u[1]; if(out.crossLat==null&&lastAlong<0&&along>=0) out.crossLat=nx*r[0]+ny*r[1]; lastAlong=along;
+    if(!o.noCup&&t>=noCap&&(k<1||hyp(nvx,nvy)<.05)){
+      if(cd<CUP&&v<1.2+4*Math.sqrt(1-(cd/CUP)*(cd/CUP))||(cd<CUP+.03&&v<.8)){ out.holed=true; x=0;y=0; t+=dt; out.samples.push({t,v,lat:0}); break; }
+      if(cd<CUP+.02){ out.lip=true; const side=((x+sx*k)*r[0]+(y+sy*k)*r[1])>=0?1:-1; const [rx,ry]=rot([nvx,nvy],side*(45+20*Math.min(1,v/6))); nvx=rx*.5; nvy=ry*.5; noCap=t+.3; out.lipSpeed=v; }
+    }
+    vx=nvx; vy=nvy; x=nx; y=ny; t+=dt;
+    if(i%5===0) out.samples.push({t:+t.toFixed(2),v:+v.toFixed(2),lat:+((x-start.x)*r[0]+(y-start.y)*r[1]).toFixed(2)});
+  }
+  out.rest={x,y}; out.time=t; out.along=x*u[0]+y*u[1]; out.side=x*r[0]+y*r[1]; out.u=u; out.r=r; return out; };
+G.puttHint=function(R){ const H=G.hole(R),b=R.cur.ball,st={x:(b.x-H.pin[0])*3,y:(b.y-H.pin[1])*3},D=hyp(st.x,st.y);
+  const find=aim=>{ let lo=.3,hi=200; for(let i=0;i<26;i++){ const m=(lo+hi)/2,s=G.simPutt(H,st,aim,m,{noCup:true}); if(s.along<1.2&&!s.water) lo=m; else hi=m; } return (lo+hi)/2; };
+  let aim=0,d=find(0); const s0=G.simPutt(H,st,0,d,{noCup:true}); const brk=(s0.crossLat==null?s0.side:s0.crossLat)*12;
+  aim=-brk; for(let k=0;k<2;k++){ d=find(aim); const s=G.simPutt(H,st,aim,d,{noCup:true}); const lat=(s.crossLat==null?s.side:s.crossLat)*12; aim-=lat; } d=find(aim);
+  const sl=slopeAt(H,st.x,st.y),u=[-st.x/(D||1),-st.y/(D||1)],r=[u[1],-u[0]]; const down=sl[0]*u[0]+sl[1]*u[1], lat=sl[0]*r[0]+sl[1]*r[1];
+  return {ft:D,dFlat:d,gap:G.ftToGap(d),reach:d<=90,breakIn:brk,aimIn:aim,downhill:down,latSlope:lat,side:Math.abs(lat)<.002?0:(lat>0?1:-1)}; };
+G.putt=function(R,gap,aimIn){ const H=G.hole(R),cur=R.cur,b=cur.ball,st={x:(b.x-H.pin[0])*3,y:(b.y-H.pin[1])*3};
+  cur.strokes++; cur.putts++; const dFlat=G.gapToFt(gap); const s=G.simPutt(H,st,aimIn==null?cur.aim:aimIn,dFlat);
+  const res={kind:'putt',club:'putter',gap,dFlat,from:{x:b.x,y:b.y},startFt:hyp(st.x,st.y),samples:s.samples,lip:s.lip,holed:s.holed,time:s.time,lieFrom:G.lie(R).t};
+  if(s.water){ cur.strokes++; cur.pen++; res.penalty=1; res.water='the water'; cur.ball=dropOut(H,res.from,{x:s.rest.x/3+H.pin[0],y:s.rest.y/3+H.pin[1]}); }
+  else cur.ball=s.holed?{x:H.pin[0],y:H.pin[1]}:{x:s.rest.x/3+H.pin[0],y:s.rest.y/3+H.pin[1]};
+  res.along=s.along; res.side=s.side; res.leftFt=hyp(s.rest.x,s.rest.y); res.pan=clamp((s.samples.length?s.samples[s.samples.length-1].lat:0)/6,-1,1);
+  return G.afterShot(R,res); };
+
+/* ---------- scoring ---------- */
+G.scoreName=function(s,par){ if(s===1) return 'a hole in one'; const d=s-par;
+  return {'-3':'an albatross','-2':'an eagle','-1':'a birdie','0':'par','1':'a bogey','2':'a double bogey','3':'a triple bogey'}[d]||(d<0?(-d)+' under par':d+' over par'); };
+G.vsText=n=>n===0?'level par':n>0?n+' over par':(-n)+' under par';
+G.total=function(R,pi){ const C=COURSES[R.cid],pl=R.players[pi]; let s=0,p=0,n=0; pl.sc.forEach((v,i)=>{ if(v!=null){ s+=v; p+=C.holes[i].par; n++; } }); return {strokes:s,par:p,vs:s-p,holes:n}; };
+G.coursePar=cid=>COURSES[cid].holes.reduce((a,h)=>a+h.par,0);
+
+/* ---------- describing the hole ---------- */
+function pts(f){ const P=[]; if(f.rx!=null){ for(let i=0;i<24;i++){ const a=i/24*2*Math.PI; P.push([f.cx+f.rx*Math.cos(a),f.cy+f.ry*Math.sin(a)]); } }
+  else for(let i=0;i<=12;i++){ const x=f.x0+(f.x1-f.x0)*i/12,y=f.y0+(f.y1-f.y0)*i/12; P.push([x,f.y0],[x,f.y1],[f.x0,y],[f.x1,y]); } return P; }
+G.hazards=function(R){ const H=G.hole(R),b=R.cur.ball,tp=G.toPin(R),out=[];
+  for(const f of H.f){ const P=pts(f).map(([x,y])=>{ const dx=x-b.x,dy=y-b.y; return [dx*tp.u[0]+dy*tp.u[1],dx*tp.r[0]+dy*tp.r[1]]; }).filter(p=>Math.abs(p[1])<=70);
+    if(!P.length) continue; const A=P.map(p=>p[0]),Lt=P.map(p=>p[1]); const fr=Math.max(0,Math.min(...A)),bk=Math.max(...A),lo=Math.min(...Lt),hi=Math.max(...Lt);
+    if(bk<3||fr>tp.yd+40) continue; if(inside(f,b.x,b.y)) continue;
+    let side; if(lo<-8&&hi>8) side='across the line'; else if(hi<=0) side=Math.round(-hi)<=3?'just left':'left, '+Math.round(-hi)+' yards off the line'; else if(lo>=0) side=Math.round(lo)<=3?'just right':'right, '+Math.round(lo)+' yards off the line'; else side=(lo+hi)/2<0?'slightly left':'slightly right';
+    const kind=f.deep?'deep bunker':KIND[f.t]; out.push({fr,text:f.name+' ('+kind+'): '+Math.round(fr)+' to '+Math.round(bk)+' yards, '+side}); }
+  out.sort((a,b)=>a.fr-b.fr); const gfr=Math.max(0,tp.yd-H.gr),gbk=tp.yd+H.gr; return out.map(o=>o.text).concat(['Green: front '+Math.round(gfr)+', back '+Math.round(gbk)+' yards'+(H.g.crown?', crowned':'')]); };
+G.describe=function(R){ const H=G.hole(R),c=H.c,bend=c[c.length-1][1]-c[0][1];
+  return 'Hole '+(R.h+1)+' of '+R.nh+', '+H.name+'. Par '+H.par+', '+H.len+' yards'+(Math.abs(bend)>15?', bending '+(bend>0?'right':'left'):'')+'.'; };
+
+/* ---------- tap swing (press and hold, or tap to start and tap to stop; then tap on the third beat) ---------- */
+const TS={FULL:1.0,MAXH:1.4,BEAT:.25,MIN_HOLD:.22,LATE:.4,IGN:.12}; G.TS=TS;
+G.tsNew=()=>({ph:'idle'});
+function tsTop(S,t){ S.power=clamp((t-S.t0)/TS.FULL,.05,1.1); S.ph='down'; S.tTop=t; S.target=t+3*TS.BEAT; return [{k:'top',power:S.power,t}]; }
+G.tsDown=function(S,t){ if(S.ph==='idle'){ S.ph='back'; S.t0=t; S.held=true; return [{k:'back',t}]; }
+  if(S.ph==='back') return tsTop(S,t);
+  if(S.ph==='down'){ if(t-S.tTop<TS.IGN) return []; S.ph='done'; return [{k:'contact',power:S.power,err:t-S.target,t}]; } return []; };
+G.tsUp=function(S,t){ if(S.ph==='back'&&S.held){ S.held=false; if(t-S.t0>=TS.MIN_HOLD) return tsTop(S,t); } return []; };
+G.tsTick=function(S,t){ if(S.ph==='back'){ if(t-S.t0>=TS.MAXH) return tsTop(S,t); return [{k:'level',power:(t-S.t0)/TS.FULL}]; }
+  if(S.ph==='down'&&t>S.target+TS.LATE){ S.ph='done'; return [{k:'late'}]; } return []; };
+
+/* ---------- motion swing (phone held like a club) ---------- */
+const MS={FULLDEG:200,START:45,STILL:25,PAUSE:.06,WIN:1.6,IDEAL:.28,ADDR:.3,TIMEOUT:12,TH:{low:2.6,medium:1.9,high:1.3}}; G.MS=MS;
+G.msNew=(sens,t)=>({ph:'arm',t0:t,still:0,th:MS.TH[sens]||MS.TH.medium,ang:0,ax:[0,0,0],pz:0,power:0});
+G.msFeed=function(S,t,dt,rot,g){ const m=hyp(rot[0],rot[1],rot[2]),ev=[];
+  if((S.ph==='arm'||S.ph==='addr')&&t-S.t0>MS.TIMEOUT){ S.ph='done'; return [{k:'timeout'}]; }
+  if(S.ph==='arm'){ if(m<MS.STILL){ S.still+=dt; if(S.still>=MS.ADDR){ S.ph='addr'; ev.push({k:'address'}); } } else S.still=0; return ev; }
+  if(S.ph==='addr'){ if(m>MS.START){ S.ph='back'; S.ang=0; S.ax=[0,0,0]; ev.push({k:'back'}); } else return ev; }
+  if(S.ph==='back'){ S.ang+=m*dt; for(let i=0;i<3;i++) S.ax[i]+=rot[i]*dt; S.power=Math.min(S.ang/MS.FULLDEG,1.1);
+    const an=hyp(...S.ax)||1, dot=(rot[0]*S.ax[0]+rot[1]*S.ax[1]+rot[2]*S.ax[2])/an;
+    if(g>=S.th&&S.ang>30){ S.ph='top'; S.tTop=t-MS.IDEAL; ev.push({k:'top',power:S.power}); }
+    else if(S.ang>15&&dot<-MS.START){ S.ph='top'; S.tTop=t; ev.push({k:'top',power:S.power}); return ev; }
+    else { if(m<MS.STILL) S.pz+=dt; else S.pz=0; if(S.pz>=MS.PAUSE&&S.ang>15){ S.ph='top'; S.tTop=t; ev.push({k:'top',power:S.power}); return ev; } ev.push({k:'level',power:S.power}); return ev; } }
+  if(S.ph==='top'){ if(g>=S.th&&t-S.tTop>=.04){ const dn=t-S.tTop; S.ph='done'; ev.push({k:'contact',power:S.power*(g<S.th*1.25?.92:1),err:clamp((dn-MS.IDEAL)*.8,-.4,.4),g,down:dn}); }
+    else if(t-S.tTop>MS.WIN){ S.ph='done'; ev.push({k:'miss'}); } }
+  return ev; };
+
+/* ---------- a simple automatic player, for tests ---------- */
+G.bot=function(R,skill){ skill=skill==null?.05:skill; const club=G.suggest(R);
+  if(club==='putter'){ const h=G.puttHint(R); return {club,gap:clamp(h.gap+gauss(R)*skill*.6,.15,1.8),aim:h.aimIn*(1+gauss(R)*skill)}; }
+  const C=CLUBS[club],tp=G.toPin(R),L=G.lie(R).t,w=G.wind(R); const f=(LIE[L]?LIE[L].f[club]:1)*(1+(w.along>=0?.006:.01)*w.along*C.wind);
+  return {club,power:clamp(tp.yd/(C.full*f)*(club==='driver'?1:.97),.08,1),err:gauss(R)*skill}; };
+G.serialize=R=>JSON.stringify(R);
+G.restore=s=>{ const R=JSON.parse(s); if(!R||R.v!==1||!COURSES[R.cid]) throw new Error('bad save'); return R; };
+
+if(typeof module!=='undefined'&&module.exports) module.exports=G; else root.GOLF=G;
+})(typeof window!=='undefined'?window:globalThis);
+
+</script>
+<script>
+/* Golf by Ear, Motion Edition: sound engine. Everything is synthesised with Web Audio; no recordings. Master chain ends in a soft limiter whose output can never exceed 0.93. */
+(function(root){
+'use strict';
+const E={ctx:null,on:true,mono:false,amb:null,wind:null,rumbleN:null,back:null,peak:0};
+const now=()=>E.ctx.currentTime;
+E.init=function(ctx){
+  if(E.ctx&&!ctx) return E.ctx;
+  const AC=root.AudioContext||root.webkitAudioContext; const c=ctx||new AC({latencyHint:'interactive'}); E.ctx=c;
+  E.master=c.createGain(); E.master.gain.value=E.on?.9:0;
+  const comp=c.createDynamicsCompressor(); comp.threshold.value=-12; comp.knee.value=6; comp.ratio.value=12; comp.attack.value=.003; comp.release.value=.25;
+  const pre=c.createGain(); pre.gain.value=.25; const sh=c.createWaveShaper(); const N=2048,cv=new Float32Array(N); for(let i=0;i<N;i++){ const x=i/(N-1)*2-1; cv[i]=.93*Math.tanh(4*x/.93); } sh.curve=cv;
+  E.an=c.createAnalyser(); E.an.fftSize=2048;
+  E.master.connect(comp); comp.connect(pre); pre.connect(sh); sh.connect(E.an); E.an.connect(c.destination);
+  const nb=c.createBuffer(1,c.sampleRate*2,c.sampleRate),d=nb.getChannelData(0); let s=12345; for(let i=0;i<d.length;i++){ s=(s*1103515245+12345)&0x7fffffff; d[i]=s/0x3fffffff-1; } E.noise=nb;
+  return c; };
+E.setOn=function(b){ E.on=b; if(E.master) E.master.gain.setTargetAtTime(b?.9:0,now(),.03); };
+E.setMono=function(b){ E.mono=b; };
+E.measure=function(){ if(!E.an) return 0; const a=new Float32Array(E.an.fftSize); E.an.getFloatTimeDomainData(a); let m=0; for(const v of a){ const x=Math.abs(v); if(x>m) m=x; } if(m>E.peak) E.peak=m; return m; };
+function out(pan,dest){ const c=E.ctx; const g=c.createGain(); if(c.createStereoPanner){ const p=c.createStereoPanner(); p.pan.value=E.mono?0:Math.max(-1,Math.min(1,pan||0)); g.connect(p); p.connect(dest||E.master); g.p=p; } else g.connect(dest||E.master); return g; }
+E.out=out;
+function env(gp,t,a,peak,dur,curve){ gp.setValueAtTime(0.0001,t); gp.linearRampToValueAtTime(peak,t+a); gp.exponentialRampToValueAtTime(0.0001,t+Math.max(a+.01,dur)); }
+function tone(f,dur,o){ o=o||{}; if(!E.ctx) return; const c=E.ctx,t=o.t||now(); const os=c.createOscillator(); os.type=o.type||'sine'; os.frequency.setValueAtTime(f,t); if(o.to) os.frequency.exponentialRampToValueAtTime(o.to,t+dur);
+  const g=out(o.pan); env(g.gain,t,o.a||.005,o.v||.3,dur); if(o.lp){ const fl=c.createBiquadFilter(); fl.type='lowpass'; fl.frequency.value=o.lp; os.connect(fl); fl.connect(g); } else os.connect(g); os.start(t); os.stop(t+dur+.05); return os; }
+function noise(dur,o){ o=o||{}; if(!E.ctx) return; const c=E.ctx,t=o.t||now(); const s=c.createBufferSource(); s.buffer=E.noise; s.loop=true; const fl=c.createBiquadFilter(); fl.type=o.type||'bandpass'; fl.Q.value=o.q||1;
+  fl.frequency.setValueAtTime(o.f||1000,t); if(o.f2) fl.frequency.exponentialRampToValueAtTime(o.f2,t+dur); const g=out(o.pan); env(g.gain,t,o.a||.005,o.v||.3,dur);
+  if(o.panTo!=null&&g.p&&!E.mono){ g.p.pan.setValueAtTime(o.pan||0,t); g.p.pan.linearRampToValueAtTime(o.panTo,t+dur); }
+  s.connect(fl); fl.connect(g); s.start(t,Math.random()*1.5); s.stop(t+dur+.05); return g; }
+E.tone=tone; E.noiseHit=noise;
+
+/* swing */
+E.backStart=function(){ if(!E.ctx) return; E.backStop(); const c=E.ctx,o=c.createOscillator(),g=out(0); o.type='triangle'; o.frequency.value=220; g.gain.setValueAtTime(.0001,now()); g.gain.linearRampToValueAtTime(.22,now()+.05); o.connect(g); o.start(); E.back={o,g,full:false}; };
+E.backLevel=function(p){ if(!E.back) return; E.back.o.frequency.setTargetAtTime(220*Math.pow(2,Math.min(p,1.1)*2),now(),.02); if(p>=1&&!E.back.full){ E.back.full=true; tone(1760,.06,{v:.25,type:'square',lp:4000}); } };
+E.backStop=function(){ if(!E.back) return; const b=E.back; E.back=null; b.g.gain.setTargetAtTime(.0001,now(),.03); b.o.stop(now()+.2); };
+E.beats=function(){ if(!E.ctx) return; const t=now(); tone(660,.05,{t:t+.25,v:.2,type:'square',lp:3000}); tone(660,.05,{t:t+.5,v:.2,type:'square',lp:3000}); tone(990,.09,{t:t+.75,v:.35,type:'square',lp:3500}); noise(.05,{t:t+.75,f:2500,q:2,v:.2});
+  if(E.back==null){ const o=E.ctx.createOscillator(),g=out(0); o.type='triangle'; o.frequency.setValueAtTime(880,t); o.frequency.exponentialRampToValueAtTime(220,t+.75); env(g.gain,t,.02,.12,.8); o.connect(g); o.start(t); o.stop(t+.85); } };
+E.contact=function(club,qual){ if(!E.ctx) return; const t=now(),bad=qual==='mishit'||qual==='off';
+  if(club==='driver'){ noise(.06,{t,f:bad?900:3200,q:1.2,v:.55}); tone(140,.12,{t,to:60,v:.5}); }
+  else if(club==='iron'){ noise(.04,{t,f:bad?800:4500,q:2,v:.5}); tone(230,.08,{t,to:90,v:.4}); }
+  else if(club==='wedge'){ noise(.05,{t,f:bad?700:2600,q:1.5,v:.4}); tone(200,.07,{t,to:100,v:.3}); noise(.12,{t:t+.02,type:'highpass',f:3000,v:.08}); }
+  else { tone(900,.04,{t,v:.35}); noise(.03,{t,f:1800,q:3,v:.25}); }
+  if(bad) tone(110,.18,{t,v:.25,type:'sawtooth',lp:500}); };
+E.whoosh=function(hang,pan,club){ if(!E.ctx) return; const t=now(); const g=noise(hang,{t,f:club==='wedge'?1600:1300,f2:420,q:2.5,v:.32,a:.12,pan:0,panTo:pan}); tone(club==='driver'?520:620,hang*.9,{t,to:300,v:.04,pan}); return g; };
+E.land=function(T,pan,v){ if(!E.ctx) return; const t=now(); v=v==null?1:v;
+  if(T==='water'){ noise(.7,{t,type:'lowpass',f:5000,f2:300,v:.5*v,pan}); for(let i=0;i<6;i++) tone(400+Math.random()*700,.05,{t:t+.15+i*.07,to:900+Math.random()*600,v:.12*v,pan}); }
+  else if(T==='bunker'||T==='waste'){ noise(.35,{t,type:'highpass',f:2500,v:.3*v,pan,a:.01}); for(let i=0;i<14;i++) noise(.015,{t:t+Math.random()*.3,f:3000+Math.random()*3000,q:4,v:.25*v,pan}); tone(150,.08,{t,v:.2*v}); }
+  else if(T==='rough'||T==='deep'){ noise(T==='deep'?.5:.28,{t,f:2200,q:.8,v:.3*v,pan,a:.02}); tone(110,.06,{t,v:.2*v,pan}); }
+  else if(T==='road'){ tone(1500,.04,{t,v:.3*v,pan}); tone(1200,.04,{t:t+.18,v:.2*v,pan}); tone(160,.06,{t,v:.25*v,pan}); }
+  else if(T==='green'){ tone(170,.07,{t,to:120,v:.3*v,pan}); noise(.05,{t,type:'lowpass',f:800,v:.15*v,pan}); }
+  else { tone(130,.09,{t,to:80,v:.4*v,pan}); noise(.06,{t,type:'lowpass',f:1200,v:.18*v,pan}); } };
+E.address=function(T){ if(!E.ctx) return; const t=now();
+  if(T==='bunker'||T==='waste'){ for(let k=0;k<2;k++){ noise(.22,{t:t+k*.3,type:'highpass',f:2200,v:.18,a:.05}); for(let i=0;i<8;i++) noise(.012,{t:t+k*.3+Math.random()*.2,f:3500+Math.random()*2500,q:4,v:.15}); } }
+  else if(T==='rough'||T==='deep') noise(.4,{t,f:2000,q:.7,v:.15,a:.1});
+  else if(T==='road') { tone(1300,.03,{t,v:.15}); tone(1300,.03,{t:t+.25,v:.12}); }
+  else if(T==='green') tone(1046,.08,{t,v:.08});
+  else noise(.2,{t,f:1500,q:.6,v:.08,a:.05}); };
+/* putting */
+E.puttTicks=function(dur){ if(!E.ctx) return; const t=now(); E.tickNodes=[]; for(let i=1;i*.25<=dur;i++){ E.tickNodes.push(tone(i%4===0?1320:880,.025,{t:t+i*.25,v:i%4===0?.14:.09,type:'square',lp:2500})); } };
+E.stopTicks=function(){ (E.tickNodes||[]).forEach(o=>{ try{ o.stop(); }catch(e){} }); E.tickNodes=[]; };
+E.backstroke=function(){ if(!E.ctx) return; noise(.12,{f:900,q:1.5,v:.08,a:.05}); };
+E.roll=function(samples,startPan){ if(!E.ctx||!samples.length) return 0; const c=E.ctx,t0=now()+.02; const s=c.createBufferSource(); s.buffer=E.noise; s.loop=true; const f=c.createBiquadFilter(); f.type='bandpass'; f.frequency.value=700; f.Q.value=1.2; const g=out(startPan||0);
+  g.gain.setValueAtTime(.0001,t0); s.connect(f); f.connect(g); let ph=0,last=0;
+  for(const p of samples){ const t=t0+p.t, v=p.v, pan=E.mono?0:Math.max(-1,Math.min(1,(startPan||0)+p.lat/6)); g.gain.linearRampToValueAtTime(Math.min(.12,.025+v*.012),t); if(g.p) g.p.pan.linearRampToValueAtTime(pan,t);
+    ph+=(p.t-last)*(2+v*2.2); last=p.t; while(ph>=1){ ph-=1; noise(.03,{t,f:1100,q:2,v:Math.min(.25,.06+v*.025),pan}); } }
+  const end=t0+samples[samples.length-1].t; g.gain.linearRampToValueAtTime(.0001,end+.05); s.start(t0); s.stop(end+.1); return end-now(); };
+E.cup=function(pan){ if(!E.ctx) return; const t=now(); [0,.05,.11,.15].forEach((d,i)=>tone(i%2?3400:2600,.08,{t:t+d,v:.22-i*.03,pan})); tone(180,.14,{t:t+.2,to:120,v:.35,pan}); };
+E.lipOut=function(pan){ if(!E.ctx) return; const t=now(); tone(2800,.1,{t,v:.25,pan}); noise(.35,{t:t+.02,f:900,f2:2400,q:3,v:.15,pan}); tone(90,.12,{t:t+.18,type:'sawtooth',lp:600,v:.18}); tone(90,.12,{t:t+.47,type:'sawtooth',lp:600,v:.14}); };
+E.chime=function(kind){ if(!E.ctx) return; const t=now(); const S={ace:[523,659,784,1047,1319,1568],eagle:[523,659,784,1047,1319],birdie:[523,659,784,1047],par:[523,784],bogey:[392,330],worse:[330,262,196],pickup:[262,196]}[kind]||[523];
+  S.forEach((f,i)=>tone(f,.35,{t:t+i*.12,v:.18,type:'triangle'})); };
+E.penalty=function(){ if(!E.ctx) return; tone(200,.25,{type:'square',lp:900,v:.18}); tone(150,.3,{t:now()+.28,type:'square',lp:900,v:.18}); };
+E.ready=function(){ tone(880,.06,{v:.2}); tone(1320,.06,{t:now()+.08,v:.2}); };
+E.blip=function(){ tone(1200,.04,{v:.12}); };
+
+/* continuous: ambience, wind tone, break rumble */
+function loopNoise(type,f,q,v,pan){ const c=E.ctx,s=c.createBufferSource(); s.buffer=E.noise; s.loop=true; const fl=c.createBiquadFilter(); fl.type=type; fl.frequency.value=f; fl.Q.value=q; const g=out(pan); g.gain.value=v; s.connect(fl); fl.connect(g); s.start(0,Math.random()*1.5); return {s,f:fl,g}; }
+function lfo(param,rate,depth){ const c=E.ctx,o=c.createOscillator(),g=c.createGain(); o.frequency.value=rate; g.gain.value=depth; o.connect(g); g.connect(param); o.start(); return o; }
+E.ambience=function(theme,o){ if(!E.ctx) return; E.stopAmb(); o=o||{}; const A={theme,nodes:[],stop:[],next:now()+2,sea:o.sea||theme==='links',water:!!o.water};
+  const add=(n)=>{ A.nodes.push(n); A.stop.push(n.s); };
+  if(theme==='parkland'){ const b=loopNoise('lowpass',700,.5,.035,-.3); add(b); A.stop.push(lfo(b.g.gain,.07,.015)); }
+  if(theme==='links'){ const w=loopNoise('bandpass',500,.7,.05,.2); add(w); A.stop.push(lfo(w.f.frequency,.11,180)); A.stop.push(lfo(w.g.gain,.05,.02)); }
+  if(theme==='sandhills'){ const p=loopNoise('bandpass',1800,.6,.03,.3); add(p); A.stop.push(lfo(p.g.gain,.09,.015)); }
+  if(theme==='desert'){ const w=loopNoise('bandpass',450,.9,.06,-.2); add(w); A.stop.push(lfo(w.f.frequency,.08,250)); A.stop.push(lfo(w.g.gain,.06,.025)); const h=loopNoise('highpass',5500,.5,.012,.4); add(h); }
+  if(A.sea){ const s=loopNoise('lowpass',450,.5,.06,o.seaPan==null?-.6:o.seaPan); add(s); A.stop.push(lfo(s.g.gain,.12,.04)); }
+  if(A.water&&!A.sea){ const w=loopNoise('bandpass',2400,2,.012,.5); add(w); A.stop.push(lfo(w.g.gain,3.1,.006)); }
+  E.amb=A; };
+E.stopAmb=function(){ const A=E.amb; if(!A) return; E.amb=null; A.nodes.forEach(n=>n.g.gain.setTargetAtTime(.0001,now(),.3)); A.stop.forEach(s=>{ try{ s.stop(now()+1.5); }catch(e){} }); };
+E.ambTick=function(){ const A=E.amb; if(!A||!E.ctx||now()<A.next) return; const t=now(),r=Math.random,pan=r()*1.6-.8;
+  if(A.theme==='parkland'){ for(let i=0;i<2+r()*4;i++){ const f=2200+r()*1800; tone(f,.09,{t:t+i*.14,to:f*(1.2+r()*.4),v:.035,pan}); } A.next=t+3+r()*6; }
+  else if(A.theme==='links'){ const f=1300+r()*400; tone(f,.35,{t,to:f*.55,v:.03,type:'sawtooth',lp:2500,pan}); tone(f*.9,.3,{t:t+.45,to:f*.5,v:.025,type:'sawtooth',lp:2500,pan}); A.next=t+7+r()*10; }
+  else if(A.theme==='sandhills'){ if(r()<.5){ const g=noise(2.5,{t,f:5200,q:6,v:.02,a:.8,pan}); } else { for(let i=0;i<3;i++) tone(1800+r()*500,.12,{t:t+i*.3,to:2600,v:.03,pan}); } A.next=t+6+r()*8; }
+  else if(A.theme==='desert'){ if(r()<.3){ tone(466,2.2,{t,v:.012,lp:1200,a:.3,pan:.8}); tone(587,2.2,{t,v:.01,lp:1200,a:.3,pan:.8}); A.next=t+40+r()*50; } else { noise(2.5,{t,f:700+r()*500,q:1,v:.04,a:.9,pan}); A.next=t+5+r()*7; } } };
+E.windTone=function(head,cross,sp,mode){ if(!E.ctx) return; const c=E.ctx; if(!E.wind){ const o=c.createOscillator(),g=out(0); o.type='sine'; g.gain.value=.0001; o.connect(g); o.start(); const l=lfo(o.frequency,4,3); E.wind={o,g,l}; }
+  const W=E.wind,f=330*Math.pow(2,Math.max(-1,Math.min(1,head/20))),v=sp<2?.0001:Math.min(.05,.012+sp*.0015); W.o.frequency.setTargetAtTime(f,now(),.2); W.g.gain.setTargetAtTime(v,now(),.3);
+  if(W.g.p) W.g.p.pan.setTargetAtTime(E.mono?0:Math.max(-.8,Math.min(.8,-cross/Math.max(sp,1))),now(),.2); W.f=f; W.v=v; };
+E.windOff=function(){ if(E.wind){ const W=E.wind; E.wind=null; W.g.gain.setTargetAtTime(.0001,now(),.1); W.o.stop(now()+.6); W.l.stop(now()+.6); } };
+E.rumble=function(side,amount){ if(!E.ctx) return; const c=E.ctx; if(!E.rumbleN){ const o=c.createOscillator(); o.type='sawtooth'; o.frequency.value=70; const f=c.createBiquadFilter(); f.type='lowpass'; f.frequency.value=380; const g=out(0); g.gain.value=.0001;
+    const n=loopNoise('lowpass',260,.7,1,0); n.g.disconnect(); if(n.g.p){ n.g.p.disconnect(); } const ng=c.createGain(); ng.gain.value=.6; n.g.connect(ng); ng.connect(f); o.connect(f); f.connect(g); o.start(); const l=lfo(g.gain,.8,0); E.rumbleN={o,g,n,l}; }
+  const R=E.rumbleN,v=amount<=0?.0001:Math.min(.16,.03+amount*.13); R.g.gain.setTargetAtTime(v,now(),.15); if(R.g.p) R.g.p.pan.setTargetAtTime(E.mono?0:side*.85,now(),.1); R.v=v; R.side=side; };
+E.rumbleOff=function(){ if(E.rumbleN){ const R=E.rumbleN; E.rumbleN=null; R.g.gain.setTargetAtTime(.0001,now(),.08); R.o.stop(now()+.5); R.n.s.stop(now()+.5); R.l.stop(now()+.5); } };
+/* ---------- Motion Edition: flag beacon, centring tone, footsteps, passing ambience ---------- */
+E.flag=function(pan,o){ if(!E.ctx) return; o=o||{}; const t=now(),b=o.behind,f=o.putt?1568:1175,lp=b?700:6000,v=(o.v||1)*(b?.16:.2);
+  tone(f,.5,{t,v,pan,lp,a:.003}); tone(f*1.5,.32,{t,v:v*.45,pan,lp,a:.003}); tone(f*2.76,.12,{t,v:v*.2,pan,lp,a:.002});
+  if(o.near) tone(f*2,.06,{t:t+.09,v:v*.5,pan,lp}); };
+E.centre=function(on){ if(!E.ctx) return; const c=E.ctx;
+  if(on&&!E.cen){ const o=c.createOscillator(),o2=c.createOscillator(),g=out(0); o.type='sine'; o.frequency.value=523.25; o2.type='sine'; o2.frequency.value=784; const g2=c.createGain(); g2.gain.value=.5; o2.connect(g2); g2.connect(g); o.connect(g); g.gain.setValueAtTime(.0001,now()); g.gain.linearRampToValueAtTime(.05,now()+.08); o.start(); o2.start(); E.cen={o,o2,g}; tone(1568,.07,{v:.16}); tone(2093,.07,{t:now()+.07,v:.14}); }
+  else if(!on&&E.cen){ const C=E.cen; E.cen=null; C.g.gain.setTargetAtTime(.0001,now(),.04); C.o.stop(now()+.3); C.o2.stop(now()+.3); } };
+E.hintMark=function(){ if(!E.ctx) return; tone(2349,.05,{v:.1}); tone(2349,.05,{t:now()+.09,v:.1}); };
+E.flick=function(dir){ if(!E.ctx) return; const t=now(); tone(dir>0?700:1000,.05,{t,v:.18,type:'square',lp:3000}); tone(dir>0?1000:700,.05,{t:t+.07,v:.18,type:'square',lp:3000}); };
+E.step=function(T,pan){ if(!E.ctx) return; const t=now(); pan=pan||0;
+  if(T==='bunker'||T==='waste'){ noise(.16,{t,type:'highpass',f:2600,v:.16,pan,a:.01}); for(let i=0;i<5;i++) noise(.012,{t:t+Math.random()*.12,f:3500+Math.random()*2500,q:4,v:.12,pan}); }
+  else if(T==='road'){ tone(900,.025,{t,v:.12,pan,type:'square',lp:2500}); noise(.05,{t,f:1800,q:1.5,v:.1,pan}); }
+  else if(T==='rough'||T==='deep'){ noise(.22,{t,f:2400,q:.7,v:.14,pan,a:.02}); tone(90,.05,{t,v:.1,pan}); }
+  else { noise(.12,{t,f:1600,q:.8,v:.11,pan,a:.01}); tone(85,.05,{t,v:.14,pan}); } };
+E.pass=function(k,pan,v,behind,amb){ if(!E.ctx) return; const t=now(),lp=behind?800:7000; v=Math.max(0,Math.min(1,v));
+  if(k==='water'){ noise(.5,{t,f:behind?500:900,q:1.2,v:.12*v,pan,a:.15}); tone(500+Math.random()*300,.06,{t:t+.2,to:900,v:.05*v,pan,lp}); }
+  else if(k==='bunker'||k==='waste'){ noise(.4,{t,type:'highpass',f:behind?1500:4000,v:.06*v,pan,a:.15}); }
+  else if(k==='deep'||k==='road'){ noise(.45,{t,f:behind?600:1400,q:.6,v:.08*v,pan,a:.15}); }
+  else if(amb==='links'){ const f=1300+Math.random()*300; tone(f,.3,{t,to:f*.6,v:.05*v,type:'sawtooth',lp:Math.min(lp,2500),pan}); }
+  else if(amb==='desert'){ noise(.6,{t,f:behind?450:800,q:1,v:.08*v,pan,a:.25}); }
+  else { for(let i=0;i<3;i++){ const f=2300+Math.random()*1500; tone(f,.08,{t:t+i*.12,to:f*1.3,v:.06*v,pan,lp}); } } };
+E.paceTone=function(ft){ if(!E.ctx) return; const f=220*Math.pow(2,Math.min(ft/60,1.1)*2); tone(f,.5,{v:.18,type:'triangle',a:.03}); };
+E.stopAll=function(){ E.backStop(); E.stopTicks(); E.rumbleOff(); E.windOff(); E.stopAmb(); E.centre(false); };
+root.GOLF_ENGINE=E;
+})(typeof window!=='undefined'?window:globalThis);
+
+</script>
+<script>
+/* Golf by Ear, Motion Edition: page, input, speech, haptics and motion controls. */
+(function(){
+'use strict';
+const G=window.GOLF,E=window.GOLF_ENGINE,$=id=>document.getElementById(id),perf=()=>performance.now()/1000;
+const DEF={motion:false,mAim:true,mSwing:true,mPutt:true,flick:true,walk:'short',frame:'tank',hsrc:'gyro',holes:'varied',assist:true,psens:'med',stepSens:'med',sound:true,haptics:true,sens:'med',out:'stereo',rate:1,msgs:'voice',diff:'normal',hand:'right',hints:true,intros:true,autoClub:true,course:'meadow',np:1,names:['Player 1','Player 2','Player 3','Player 4']};
+let S=Object.assign({},DEF); try{ Object.assign(S,JSON.parse(localStorage.getItem('gbm.settings')||'{}')); }catch(e){}
+let R=null,club='driver',ts=null,putt1=0,puttTimer=null,loop=null,busy=false,last='',unlocked=false,lastPtr=0,ambT=null,wake=null,puttBy='tap';
+if(!['low','med','high'].includes(S.sens)) S.sens='med';
+const canVib=typeof navigator.vibrate==='function';
+const saveS=()=>{ try{ localStorage.setItem('gbm.settings',JSON.stringify(S)); }catch(e){} };
+
+/* ---------- speech ---------- */
+let voice=null; function pickVoice(){ const ss=window.speechSynthesis; if(!ss) return; const v=ss.getVoices()||[]; voice=v.find(x=>/en-GB/i.test(x.lang)&&/Daniel|Serena|Kate|Arthur|Martha/i.test(x.name))||v.find(x=>/en-GB/i.test(x.lang))||v.find(x=>/^en/i.test(x.lang))||null; }
+if(window.speechSynthesis){ pickVoice(); try{ speechSynthesis.addEventListener('voiceschanged',pickVoice); }catch(e){} }
+function speak(t){ const ss=window.speechSynthesis; if(!ss||!t) return; try{ ss.cancel(); const u=new SpeechSynthesisUtterance(t); u.lang='en-GB'; u.rate=+S.rate||1; if(voice) u.voice=voice; ss.speak(u); }catch(e){} }
+function say(t){ last=t; const st=$('status'); st.setAttribute('aria-live',S.msgs==='voice'?'off':'polite'); st.textContent=t; if(S.msgs!=='sr') speak(t); }
+const vib=p=>{ if(S.haptics&&canVib){ try{ navigator.vibrate(p); }catch(e){} } };
+
+/* ---------- unlocking audio on iOS ---------- */
+function unlock(){ if(unlocked&&E.ctx&&E.ctx.state==='running') return; try{
+  if(navigator.audioSession) navigator.audioSession.type='playback';
+  const c=E.init(); if(c.state!=='running') c.resume();
+  const b=c.createBuffer(1,1,22050),s=c.createBufferSource(); s.buffer=b; s.connect(c.destination); s.start(0);
+  E.setOn(S.sound); E.setMono(S.out==='mono');
+  if(!unlocked&&window.speechSynthesis){ const u=new SpeechSynthesisUtterance(' '); u.volume=0; speechSynthesis.speak(u); }
+  unlocked=true; if(!ambT) ambT=setInterval(()=>{ E.ambTick(); },1000); if(R) env(); }catch(e){} }
+document.addEventListener('pointerdown',unlock,true); document.addEventListener('keydown',unlock,true);
+
+/* ---------- words ---------- */
+const r0=Math.round;
+function distWords(){ const tp=G.toPin(R),L=G.lie(R); if(L.t==='green'||tp.yd<10) return r0(tp.ft)+(r0(tp.ft)===1?' foot':' feet')+' to the hole'; return r0(tp.yd)+' yards to the pin'; }
+function clubWords(){ const C=G.CLUBS[club]; const sg=G.suggest(R); return 'Club: '+C.name+(club!=='putter'?', full swing '+C.full+' yards':'')+(sg===club?'.':'. Suggested: '+G.CLUBS[sg].name+'.'); }
+function aimWords(){ const a=R.cur.aim; if(!a) return 'Aiming straight at the '+(club==='putter'?'hole':'pin')+'.'; return 'Aiming '+Math.abs(a)+(club==='putter'?' inches ':' yards ')+(a<0?'left':'right')+' of the '+(club==='putter'?'hole':'pin')+'.'; }
+function shortInfo(){ return distWords()+'. Lie: '+G.lie(R).name+'. '+(club==='putter'&&G.onGreen(R)?'':G.windWords(R)+' ')+clubWords(); }
+function fullInfo(){ const H=G.hole(R); return 'Hole '+(R.h+1)+' of '+R.nh+', par '+H.par+'. '+(R.players.length>1?G.player(R).name+', ':'')+(R.cur.strokes?'played '+R.cur.strokes+'. ':'first shot. ')+shortInfo()+' '+aimWords(); }
+function ordinal(n){ return n+(['th','st','nd','rd'][(n%100-20)%10]||['th','st','nd','rd'][n%100]||'th'); }
+
+/* ---------- display ---------- */
+function setClub(c,silent){ club=c; if(typeof newMachines==='function') newMachines(true); document.querySelectorAll('[data-club]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.club===c?'true':'false')); if(R&&R.cur) R.cur.aim=0; updateAct(); env(); if(!silent&&R) say(clubWords()); }
+function updateAct(){ let t='Swing',pad='Swing pad. Press and hold to swing.';
+  if(R&&R.phase==='holeDone'){ t=R.p<R.players.length-1?'Next player':(R.h<R.nh-1?'Next hole':'Finish round'); pad=t; }
+  else if(R&&R.phase==='roundDone'){ t='Round finished'; pad=t; }
+  else if(MO.phase==='walk'){ t='Skip the walk'; pad='Skip the walk'; }
+  else if(club==='putter'){ t='Putt'; pad='Putting pad. Tap once to start, tap again to strike.'+(puttOn()?' Or putt with the phone.':''); }
+  else if(swingOn()){ pad='Swing pad. Press and hold to swing, or just swing the phone.'; }
+  const a=$('actBtn'); if(a.textContent!==t) a.textContent=t; const p=$('pad'); if(p.getAttribute('aria-label')!==pad){ p.setAttribute('aria-label',pad); p.textContent=pad.split('.')[0]; } }
+function env(){ if(!E.ctx||!R||R.phase!=='play'){ E.rumbleOff(); E.windOff(); return; } const H=G.hole(R),tp=G.toPin(R);
+  if(G.onGreen(R)){ const gr=H.g.grain||[0,0],dot=gr[0]*tp.u[0]+gr[1]*tp.u[1]; E.windTone(-dot*15,0,(gr[0]||gr[1])?6:0);
+    const b=R.cur.ball,s=G.slopeAt(H,(b.x-H.pin[0])*3,(b.y-H.pin[1])*3),lat=s[0]*tp.r[0]+s[1]*tp.r[1]; E.rumble(breakPan(lat>0?1:-1),Math.abs(lat)<.002?0:Math.min(1,Math.abs(lat)/.03)); }
+  else { const w=G.wind(R); E.windTone(w.head,w.cross,w.sp); E.rumbleOff(); } }
+function card(){ const ol=$('card'); ol.textContent=''; if(!R) return; const C=G.course(R); let any=false;
+  C.holes.forEach((H,i)=>{ if(!R.players.some(p=>p.sc[i]!=null)) return; any=true; const li=document.createElement('li'); li.textContent='Hole '+(i+1)+', '+H.name+', par '+H.par+': '+R.players.filter(p=>p.sc[i]!=null).map(p=>p.name+' '+p.sc[i]+' ('+G.scoreName(p.sc[i],H.par)+')').join('; ')+'.'; ol.appendChild(li); });
+  $('cardNone').hidden=any; const tt=R.players.map((p,i)=>{ const t=G.total(R,i); return p.name+': '+t.strokes+', '+G.vsText(t.vs); }).join('. '); if(any){ const li=document.createElement('li'); li.textContent='Totals. '+tt+'.'; ol.appendChild(li); } }
+function save(){ try{ if(R&&R.phase!=='roundDone') localStorage.setItem('gbm.round',G.serialize(R)); else localStorage.removeItem('gbm.round'); }catch(e){} resumeLabel(); }
+function resumeLabel(){ const b=$('resumeBtn'); let s=null; try{ s=localStorage.getItem('gbm.round'); }catch(e){} if(!s||R){ b.disabled=true; b.textContent='Resume round'; return; }
+  try{ const x=G.restore(s); b.disabled=false; b.textContent='Resume round: '+G.COURSES[x.cid].name+', hole '+(x.h+1)+', '+x.players[x.p].name; }catch(e){ b.disabled=true; } }
+
+/* ---------- rounds and turns ---------- */
+function names(){ const n=+S.np||1,o=[]; for(let i=1;i<=n;i++){ const v=($('name'+i).value||'').trim(); o.push(v||'Player '+i); } return o; }
+function startRound(resume){ unlock(); ensurePermission(); if(RG.on) rangeEnd(); stopSwing();
+  if(resume){ try{ R=G.restore(localStorage.getItem('gbm.round')); }catch(e){ say('Sorry, the saved round could not be loaded.'); return; } }
+  else R=G.newRound(S.course,names(),{diff:S.diff,hand:S.hand});
+  R.diff=S.diff; R.hand=S.hand; card(); save(); if(navigator.wakeLock&&!wake) navigator.wakeLock.request('screen').then(w=>{ wake=w; w.addEventListener('release',()=>{ wake=null; }); }).catch(()=>{});
+  if(resume&&R.phase==='holeDone'){ updateAct(); say('Round resumed. '+G.player(R).name+' finished hole '+(R.h+1)+'. Tap '+$('actBtn').textContent+' to go on.'); $('pad').focus(); return; }
+  beginTurn(!resume||R.cur.strokes===0,resume); $('pad').focus(); }
+function beginTurn(newHole,resumed){ const H=G.hole(R); if(E.ctx) E.ambience(H.amb,{sea:!!H.sea||H.amb==='links',seaPan:H.sea?-.7:.6,water:H.f.some(f=>f.t==='water')});
+  setClub(S.autoClub||!R.cur.strokes?G.suggest(R):club,true); aimPhase(); let t=resumed?'Round resumed. ':'';
+  if(newHole) t+=G.describe(R)+' '; if(newHole&&S.intros&&H.intro&&R.p===0&&!resumed) t+=H.intro+' ';
+  if(R.players.length>1) t+=G.player(R).name+' to play. '; t+=shortInfo(); if(aimOn()) t+=' '+flagWords(); say(t); env(); if(E.ctx) E.address(G.lie(R).t); updateAct(); }
+function next(){ const k=G.advance(R); save(); if(k==='end') return roundEnd(); beginTurn(k==='hole'); }
+function holeEndText(res){ const pl=G.player(R),H=G.hole(R),s=pl.sc[R.h],nm=G.scoreName(s,H.par),t=G.total(R,R.p);
+  let x=(R.cur.pickup?pl.name+' picks up and scores '+s:(R.players.length>1?pl.name+' holes out in ':'Holed out in ')+s)+', '+nm+(R.cur.pickup?'':' on a par '+H.par)+'. ';
+  x+=(R.players.length>1?pl.name+' is ':'You are ')+G.vsText(t.vs)+' after '+t.holes+(t.holes===1?' hole':' holes')+', '+t.strokes+' strokes. ';
+  if(R.players.length>1&&R.p===R.players.length-1) x+='Standings: '+standings()+'. ';
+  x+='Tap '+(R.p<R.players.length-1?'Next player':R.h<R.nh-1?'Next hole':'Finish round')+' to go on.';
+  E.chime(R.cur.pickup?'pickup':s===1?'ace':s-H.par<=-2?'eagle':s-H.par===-1?'birdie':s===H.par?'par':s-H.par===1?'bogey':'worse'); return x; }
+function standings(){ return R.players.map((p,i)=>({n:p.name,t:G.total(R,i)})).sort((a,b)=>a.t.vs-b.t.vs).map(o=>o.n+' '+G.vsText(o.t.vs)).join(', '); }
+function roundEnd(){ E.rumbleOff(); E.windOff(); const C=G.course(R); let x='Round complete on '+C.name+'. ';
+  R.players.forEach((p,i)=>{ const t=G.total(R,i); x+=p.name+': '+t.strokes+' strokes, '+G.vsText(t.vs)+'. '; });
+  let best={}; try{ best=JSON.parse(localStorage.getItem('gbm.best')||'{}'); }catch(e){}
+  const top=Math.min(...R.players.map((p,i)=>G.total(R,i).strokes)); if(best[R.cid]==null||top<best[R.cid]){ if(best[R.cid]!=null) x+='A new best score for this course! '; best[R.cid]=top; try{ localStorage.setItem('gbm.best',JSON.stringify(best)); }catch(e){} }
+  x+='Well played. Choose Start round to play again.'; save(); showBest(); updateAct(); E.chime('par'); say(x); }
+function showBest(){ let b={}; try{ b=JSON.parse(localStorage.getItem('gbm.best')||'{}'); }catch(e){} $('best').textContent=Object.keys(b).length?'Best scores: '+Object.keys(b).map(k=>G.COURSES[k].name+' '+b[k]+' ('+G.vsText(b[k]-G.coursePar(k))+')').join('; ')+'.':''; }
+
+/* ---------- full swing ---------- */
+function startLoop(){ if(!loop) loop=setInterval(tick,20); }
+function stopLoop(){ if(loop){ clearInterval(loop); loop=null; } }
+function tick(){ if(ts) handleTs(G.tsTick(ts,perf())); else stopLoop(); }
+function handleTs(evs){ for(const e of evs){
+  if(e.k==='back'){ lockAim(); E.backStart(); }
+  else if(e.k==='level') E.backLevel(e.power);
+  else if(e.k==='top'){ E.backLevel(e.power); E.backStop(); E.beats(); }
+  else if(e.k==='contact'){ ts=null; stopLoop(); doShot(e.power,e.err); }
+  else if(e.k==='late'){ ts=null; stopLoop(); E.backStop(); say('Too late: no stroke counted. Swing again when you are ready.'); } } }
+function stopSwing(){ ts=null; stopLoop(); E.backStop(); E.stopTicks(); if(puttTimer){ clearTimeout(puttTimer); puttTimer=null; } putt1=0; if(MO.locked){ MO.locked=false; } newMachines(); }
+const SHAPE={straight:'straight',fade:'a gentle fade, curving right',slice:'a big slice, curving right',draw:'a gentle draw, curving left',hook:'a big hook, curving left'};
+function shapeWord(res){ let s=SHAPE[res.shape]; if(R.hand==='left') s=s.replace(/right|left/g,m=>m==='right'?'left':'right'); return s; }
+function doShot(power,err){ busy=true; beaconQuiet(); E.backStop(); E.rumbleOff(); vib(45);
+  const fromName=G.lie(R).name,res=G.fullShot(R,club,power,err); E.contact(club,res.qual); save();
+  const fly=res.stuck?.6:res.hang; if(!res.stuck) E.whoosh(res.hang,res.pan,club);
+  setTimeout(()=>{ E.land(res.water?'water':res.landT,res.pan); if(res.holed) setTimeout(()=>E.cup(res.pan),250); if(res.penalty) setTimeout(()=>E.penalty(),700); },fly*1000);
+  setTimeout(()=>finishShot(res,fromName),fly*1000+(res.penalty?1300:800)); }
+function finishShot(res,fromName){ busy=false; let x;
+  const q={pure:'Pure strike',good:'Good contact',off:'Slightly off the middle',mishit:'Mishit'}[res.qual];
+  if(res.stuck) x='The ball hits the steep face of '+fromName+' and falls back in. Only the wedge gets out of a deep bunker. ';
+  else { x=q+', '+shapeWord(res)+'. '+r0(res.total)+' yards';
+    if(res.holed) x+=', and it goes in the hole! ';
+    else if(res.water) x+=' and into '+res.water+'. Splash! One penalty stroke. You drop beside it, in '+res.restName+'. ';
+    else x+=', into '+res.restName+'. '+(res.crownOff?'It rolled off the crowned green. ':''); }
+  if(R.phase==='holeDone'){ holeDoneMotion(); x+=holeEndText(res); card(); save(); updateAct(); env(); say(x); return; }
+  if(S.autoClub) setClub(G.suggest(R),true); const off=Math.abs(res.lat||0);
+  if(!res.stuck&&!res.water&&off>=3) x+=r0(off)+' yards '+(res.lat>0?'right':'left')+' of where you aimed. ';
+  const wk=motionAfter(res); x+='Played '+R.cur.strokes+'. '+(wk||distWords()+'. '+clubWords()+(aimOn()?' '+flagWords():'')); env(); if(!wk) E.address(G.lie(R).t); updateAct(); say(x); }
+
+/* ---------- putting ---------- */
+function puttDown(){ const t=perf();
+  if(!putt1){ lockAim(); putt1=t; E.backstroke(); E.puttTicks(G.PUTT_GIVEUP); vib(10); puttTimer=setTimeout(()=>{ puttTimer=null; putt1=0; E.stopTicks(); say('Putt cancelled, no stroke. Tap once to start, then again to strike, within two seconds.'); },G.PUTT_GIVEUP*1000); return; }
+  const gap=t-putt1; putt1=0; clearTimeout(puttTimer); puttTimer=null; E.stopTicks(); doPutt(gap); }
+function doPutt(gap){ busy=true; beaconQuiet(); E.rumbleOff(); const fromGreen=G.onGreen(R),res=G.putt(R,gap,R.cur.aim); res.by=puttBy; puttBy='tap'; E.contact('putter'); save();
+  const dur=Math.max(.3,E.roll(res.samples,0)||res.time); const pat=[25]; let tt=0; // rolling vibration: pulses spaced wider as the ball slows
+  for(const s of res.samples){ if(s.t<tt) continue; const gapMs=Math.min(400,Math.max(60,700/(1+s.v*2))); pat.push(gapMs,12); tt=s.t+gapMs/1000; if(pat.length>80) break; } vib(pat);
+  setTimeout(()=>{ if(res.holed){ E.cup(res.pan); vib([0,30,60,30]); } else if(res.lip){ E.lipOut(res.pan); vib([0,20,170,70]); } if(res.penalty){ E.land('water',res.pan); E.penalty(); } },Math.max(0,dur*1000-(res.holed?120:0)));
+  setTimeout(()=>finishPutt(res),dur*1000+(res.holed||res.lip?900:450)); }
+function finishPutt(res){ busy=false; let x=(res.by==='motion'?'Stroke':'Gap '+res.gap.toFixed(2)+' seconds')+', pace for about '+r0(res.dFlat)+' feet on the flat. ';
+  if(res.holed) x+=(res.lip?'It lips, ':'')+'In the hole! '; else { if(res.lip) x+='Lipped out! '; if(res.water) x+='Into the water. One penalty stroke. ';
+    else { const al=res.along,sd=res.side; const ftIn=v=>{ const a=Math.abs(v); return a>=1?r0(a)+(r0(a)===1?' foot':' feet'):r0(a*12)+' inches'; };
+      x+=(Math.abs(al)<.25?'Level with the hole':ftIn(al)+(al>0?' past':' short'))+(Math.abs(sd)>=1/12?', '+ftIn(sd)+(sd>0?' right':' left'):'')+'. '; } }
+  if(R.phase==='holeDone'){ holeDoneMotion(); x+=holeEndText(res); card(); save(); updateAct(); env(); say(x); return; }
+  if(S.autoClub) setClub(G.suggest(R),true); aimPhase(); x+='Played '+R.cur.strokes+'. '+distWords()+'.'+(club!=='putter'?' '+clubWords():'')+(aimOn()?' '+flagWords():''); env(); updateAct(); say(x); }
+function readGreen(){ if(!R||R.phase!=='play') return say('Start a round first.'); if(!G.onGreen(R)&&club!=='putter') return say('You are not on the green. '+distWords()+'.');
+  const h=G.puttHint(R),inch=v=>r0(Math.abs(v)); let x='Putt of '+r0(h.ft)+' feet, '+(Math.abs(h.downhill)<.003?'fairly level':h.downhill>0?(h.downhill>.012?'steeply downhill':'downhill'):(h.downhill<-.012?'steeply uphill':'uphill'))+'. ';
+  x+=Math.abs(h.breakIn)<1.5?'It is fairly straight. ':'It breaks to the '+(h.breakIn>0?'right':'left')+', about '+(Math.abs(h.breakIn)>=18?r0(Math.abs(h.breakIn)/12)+' feet':inch(h.breakIn)+' inches')+'. ';
+  if(S.hints){ if(!h.reach) x+='That is too far to reach with a putt; try the wedge. '; else x+='Try aiming '+(Math.abs(h.aimIn)<1.5?'straight at the hole':inch(h.aimIn)+' inches '+(h.aimIn>0?'right':'left'))+', with a gap of about '+h.gap.toFixed(1)+' seconds. '; }
+  x+=aimWords(); if(puttOn()&&h.reach&&S.hints){ x=x.replace(/, with a gap of about [\d.]+ seconds/,''); x+=' That was the pace tone for it: match it with your backstroke tone.'; E.paceTone(h.dFlat); setTimeout(()=>say(x),700); } else say(x); if(E.ctx&&h.side){ E.rumble(breakPan(h.side),Math.min(1,Math.abs(h.latSlope)/.03)+.2); setTimeout(env,1800); } }
+
+/* ---------- Motion Edition: turn to aim, swing and putt with the phone, walk to the ball ---------- */
+const GM=window.GOLFM,MOT=window.MOT;
+const MO={det:new MOT.Detector({stepSens:S.stepSens}),yaw:new MOT.Yaw(),sw:null,pm:null,grav:null,lastT:0,asked:false,granted:false,listening:false,nM:0,nO:0,look:0,hist:[],
+  phase:'idle',locked:false,beepT:0,onLine:false,hintT:0,hint:null,hintKey:'',walk:null,readyDone:false,doneT:0,lastJabT:0,fdT:0,fdPend:false,upT:0,lastBstat:'',bT:0,rT:0,iv:null};
+const motionOn=()=>S.motion&&MO.nM+MO.nO>0;
+const aimOn=()=>S.motion&&S.mAim&&MO.nO>0;
+const swingOn=()=>S.motion&&S.mSwing&&MO.nM>0;
+const puttOn=()=>S.motion&&S.mPutt&&MO.nM>0;
+const walkOn=()=>S.motion&&S.walk!=='off'&&MO.nM>0;
+function frameOpts(){ return aimOn()?{on:true,mode:'turret',frame:S.frame,look:MO.look}:null; }
+function srel(b){ return MOT.soundRel(b,frameOpts()); }
+function pinB(){ return R?GM.pinBearing(G,R,S.holes):0; }
+function breakPan(side){ if(!aimOn()||!R) return side; return GM.panOf(srel(GM.breakBearing(pinB(),side))); }
+function flagWords(){ if(!R||!aimOn()) return ''; return (club==='putter'?'The hole':'The flag')+' is at '+GM.clockWords(MOT.rel(pinB()-MO.look))+'.'; }
+function flagInfo(){ unlock(); if(!R||R.phase!=='play') return say(R?last:'Start a round first: go to New round and choose Start round.');
+  say(distWords()+'. '+(aimOn()?flagWords()+' ':'')+aimWords()+(MO.phase==='walk'?' You are walking to your ball.':'')); }
+function newMachines(keepReady){ MO.sw=new GM.SwingM(S.sens,{flick:S.flick}); MO.pm=new GM.PuttM(S.psens,{flick:S.flick}); MO.locked=false; if(!keepReady) MO.readyDone=false; }
+function aimPhase(){ MO.phase='aim'; MO.walk=null; newMachines(); }
+function holeDoneMotion(){ MO.phase='done'; MO.doneT=perf(); beaconQuiet(); }
+function lookAt(t){ let best=MO.look; for(const h of MO.hist){ if(h.t<=t) best=h.look; else break; } return best; }
+function aimFrom(look){ const off=MOT.rel(look-pinB()),tp=G.toPin(R); return club==='putter'?GM.aimInches(off,tp.ft,S.assist?2:0):GM.aimYards(off,tp.yd,S.assist?2.5:0); }
+function lockAim(t0){ if(!aimOn()||!R||R.phase!=='play') return; R.cur.aim=aimFrom(lookAt((t0||perf())-.12)); MO.locked=true; beaconQuiet(); }
+function beaconQuiet(){ if(MO.onLine){ MO.onLine=false; E.centre(false); } }
+function beacon(t,bearing,putt,assist){ const r=MOT.rel(bearing-MO.look),a=Math.abs(r),on=a<=assist;
+  if(on!==MO.onLine){ MO.onLine=on; E.centre(on); }
+  const iv=on?1.4:a<10?.45:a<30?.7:1.0;
+  if(t-MO.beepT>=iv){ MO.beepT=t; const rr=srel(bearing); E.flag(GM.panOf(rr),{behind:GM.behind(rr),near:a<10,putt}); } return r; }
+function puttHintCached(){ const b=R.cur.ball,k=R.h+','+R.p+','+b.x.toFixed(3)+','+b.y.toFixed(3); if(MO.hintKey!==k){ MO.hintKey=k; MO.hint=G.onGreen(R)?G.puttHint(R):null; } return MO.hint; }
+function mtick(){ const t=perf();
+  if(RG.on) rangeTick(t);
+  else if(R&&R.phase==='play'&&MO.phase==='aim'&&aimOn()&&!busy&&!MO.locked&&!ts&&!putt1){ R.cur.aim=aimFrom(MO.look); const put=club==='putter',pb=pinB();
+    beacon(t,pb,put,S.assist?(put?2:2.5):1);
+    if(put&&S.hints){ const h=puttHintCached(); if(h&&h.reach){ const hf=GM.facingForInches(h.aimIn,h.ft); if(Math.abs(hf)>2&&Math.abs(MOT.rel(MO.look-pb-hf))<=1.5&&t-MO.hintT>.6){ MO.hintT=t; E.hintMark(); } } } }
+  else beaconQuiet();
+  if(R&&R.phase==='play'&&aimOn()&&!busy&&G.onGreen(R)&&t-MO.rT>.25&&E.rumbleN){ MO.rT=t; env(); }
+  if(t-MO.bT>1){ MO.bT=t; const x=bstatText(); if(x!==MO.lastBstat){ MO.lastBstat=x; $('bstat').textContent=x; } } }
+/* sensors */
+function ensurePermission(){ if(S.motion&&!MO.asked) askPermission(); }
+function listen(){ if(MO.listening) return; MO.listening=true; window.addEventListener('devicemotion',onMotion); window.addEventListener('deviceorientation',onOrient); if(!MO.iv) MO.iv=setInterval(mtick,50); }
+function askPermission(){ const reqs=[]; try{ if(window.DeviceMotionEvent&&typeof DeviceMotionEvent.requestPermission==='function') reqs.push(DeviceMotionEvent.requestPermission()); if(window.DeviceOrientationEvent&&typeof DeviceOrientationEvent.requestPermission==='function') reqs.push(DeviceOrientationEvent.requestPermission()); }catch(e){ return Promise.resolve('error'); }
+  listen(); MO.asked=true; if(!reqs.length){ MO.granted=true; return Promise.resolve('granted'); }
+  return Promise.all(reqs).then(r=>{ const g=r.every(x=>x==='granted'); MO.granted=g; return g?'granted':'denied'; },()=>'error'); }
+function enableMotion(){ unlock(); say('Turning on motion controls. If the phone asks to allow motion and orientation, choose Allow.');
+  askPermission().then(res=>{ if(res!=='granted'){ S.motion=false; saveS(); syncMotion(); say(res==='denied'?'Motion was not allowed, so motion controls are off. Tap swing and the buttons work as always. To allow it later, close this tab and open the game again.':'This browser would not give motion readings. Tap swing and the buttons work as always.'); return; }
+    S.motion=true; saveS(); syncMotion(); const n0=MO.nM+MO.nO;
+    setTimeout(()=>{ if(MO.nM+MO.nO===n0&&MO.nM+MO.nO===0){ S.motion=false; saveS(); syncMotion(); say('No motion readings are coming from this phone or browser, so motion controls are off. Tap swing and the buttons work as always.'); }
+      else { recentre(true); if(R&&R.phase==='play'&&MO.phase==='idle') aimPhase(); say('Motion controls on.'+(MO.nO?'':' Turning to aim is not available: no orientation readings.')+(MO.nM?'':' Swinging and walking are not available: no movement readings.')+' Straight ahead is the way you face now.'+(R&&R.phase==='play'&&aimOn()?' '+flagWords():' Try the motion training range, or start a round.')); }
+      syncMotion(); updateAct(); env(); },2500); }); }
+function toggleMotion(){ unlock(); if(!S.motion){ enableMotion(); return; } S.motion=false; saveS(); beaconQuiet(); if(MO.phase==='walk') arrive(true); syncMotion(); updateAct(); env(); say('Motion controls off. Tap swing and buttons only.'); }
+function onMotion(e){ const g=e.accelerationIncludingGravity,a=e.acceleration; if(!g||g.x==null) return; MO.nM++;
+  if(!S.motion) return; const t=perf(),dt=MO.lastT?Math.min(.1,Math.max(.004,t-MO.lastT)):.016; MO.lastT=t;
+  const gv=[g.x||0,g.y||0,g.z||0],hasA=!!(a&&a.x!=null),lin=hasA?[a.x||0,a.y||0,a.z||0]:null;
+  if(!MO.grav) MO.grav=gv.slice(); const tg=hasA?[gv[0]-lin[0],gv[1]-lin[1],gv[2]-lin[2]]:gv; const k=hasA?.3:.05; for(let i=0;i<3;i++) MO.grav[i]+=(tg[i]-MO.grav[i])*k;
+  const L=lin||[gv[0]-MO.grav[0],gv[1]-MO.grav[1],gv[2]-MO.grav[2]], w=GM.wFromEvent(e.rotationRate);
+  for(const v of MO.det.feed({t,g:gv,a:lin})){ if(v.k==='jab') onJab(v,t); else if(v.k==='step') onStep(v,t); }
+  const M=machine(); if(!M) return; for(const ev of M.feed(t,dt,w,L,MO.grav)) onSwingEv(ev,M===MO.pm); }
+function onOrient(e){ if(e.alpha==null&&e.webkitCompassHeading==null) return; MO.nO++;
+  const h=S.hsrc==='compass'&&typeof e.webkitCompassHeading==='number'?e.webkitCompassHeading:MOT.headingFromEuler(e.alpha,e.beta,e.gamma);
+  const down=Math.abs(e.beta||0)>150&&Math.abs(e.gamma||0)<35,now=performance.now(); // face down for a second, then pick it up: recentre
+  if(down){ MO.upT=0; if(!MO.fdT) MO.fdT=now; if(!MO.fdPend&&now-MO.fdT>1000&&S.motion){ MO.fdPend=true; E.tone(660,.12,{v:.12}); } return; }
+  MO.fdT=0; if(MO.fdPend){ if(!MO.upT) MO.upT=now; if(now-MO.upT>600){ MO.fdPend=false; MO.upT=0; MO.yaw.feed(h); recentre(false); return; } }
+  MO.look=MO.yaw.feed(h); const t=perf(); MO.hist.push({t,look:MO.look}); while(MO.hist.length&&t-MO.hist[0].t>1.5) MO.hist.shift(); }
+function recentre(quiet){ MO.yaw.recentre(); MO.look=0; MO.hist=[]; if(!quiet){ E.tone(880,.1,{v:.14}); say('Recentred. Straight ahead is the way you face now.'+(R&&R.phase==='play'&&aimOn()?' '+flagWords():'')); } }
+function machine(){ if(RG.on) return RG.stage==='swing'?MO.sw:RG.stage==='putt'?MO.pm:null;
+  if(!R||R.phase!=='play'||MO.phase!=='aim'||busy||ts||putt1) return null; return club==='putter'?(puttOn()?MO.pm:null):(swingOn()?MO.sw:null); }
+function onSwingEv(ev,put){ if(RG.on) return rangeSwingEv(ev,put);
+  if(ev.k==='address'){ if(!MO.readyDone){ MO.readyDone=true; E.ready(); } }
+  else if(ev.k==='flick') nextClub(ev.dir>0?1:-1,true);
+  else if(ev.k==='back'){ lockAim(ev.t0); if(put) E.backstroke(); E.backStart(); }
+  else if(ev.k==='level') E.backLevel(put?ev.ft/GM.PS.FULLFT:ev.power);
+  else if(ev.k==='top'){ if(put) E.backLevel(ev.ft/GM.PS.FULLFT); E.backStop(); }
+  else if(ev.k==='abort'){ E.backStop(); MO.locked=false; }
+  else if(ev.k==='contact'){ E.backStop(); if(put){ puttBy='motion'; doPutt(G.ftToGap(ev.ft)); } else doShot(ev.power,ev.err); }
+  else if(ev.k==='miss'){ E.backStop(); newMachines(true); say(put?'No stroke counted: the putter did not come back through. Hold still, then try again.':'No strike detected, so no stroke counted. Hold still, then swing through firmly, or raise the swing sensitivity.'); } }
+function nextClub(d,byFlick){ unlock(); if(!R||R.phase!=='play') return say('Start a round first.'); if(busy||ts||putt1) return;
+  const ids=G.CLUB_IDS,i=ids.indexOf(club),j=Math.max(0,Math.min(ids.length-1,i+d)); if(byFlick) E.flick(d);
+  if(j===i) return say(G.CLUBS[club].name+' is the '+(d>0?'last':'first')+' club.'); setClub(ids[j]); }
+/* jab: skip the walk, or go on to the next hole */
+function onJab(v,t){ if(RG.on) return; if(MO.phase==='walk') return skipWalk(); if(R&&R.phase==='holeDone'&&MO.phase==='done'&&t-MO.doneT>2&&t-MO.lastJabT>1.5){ MO.lastJabT=t; next(); } }
+/* walking to the ball */
+function motionAfter(res){ if(!walkOn()||res.holed){ aimPhase(); return ''; } const need=GM.walkSteps(res.total||0,S.walk); if(!need){ aimPhase(); return ''; }
+  MO.walk={need,done:0,from:res.from,to:{x:R.cur.ball.x,y:R.cur.ball.y},plan:GM.walkPlan(G,R,res.from,R.cur.ball,need),foot:1}; MO.phase='walk'; MO.walk.plan.objs.forEach(o=>o.last=-9);
+  return 'Walk to your ball: about '+need+' steps. Or jab the phone, or press Skip the walk.'; }
+function onStep(v,t){ if(RG.on||MO.phase!=='walk'||!MO.walk||busy) return; const W=MO.walk; W.done++; const f=Math.min(1,W.done/W.need),H=G.hole(R),x=W.from.x+(W.to.x-W.from.x)*f,y=W.from.y+(W.to.y-W.from.y)*f;
+  W.foot=-W.foot; E.step(G.terrainAt(H,x,y).t,W.foot*.15); const wd=f*W.plan.len;
+  for(const o of W.plan.objs){ const d=Math.hypot(o.al-wd,o.lt); if(d<50&&W.done-o.last>=2){ o.last=W.done; const r=GM.objRel(o,wd); E.pass(o.k,GM.panOf(r),1-d/55,GM.behind(r),o.amb); } }
+  if(W.done>=W.need) setTimeout(()=>arrive(false),350); }
+function skipWalk(){ if(MO.phase!=='walk') return; arrive(true); }
+function arrive(skipped){ if(MO.phase!=='walk') return; aimPhase(); updateAct(); env(); if(!R||R.phase!=='play') return; E.address(G.lie(R).t);
+  say((skipped?'':'You reach your ball. ')+'Lie: '+G.lie(R).name+'. '+distWords()+'. '+clubWords()+(aimOn()?' '+flagWords():'')); }
+function bstatText(){ if(!S.motion) return 'Motion controls off.'; const p=['Motion on.']; if(aimOn()) p.push('Facing '+MOT.clockOf(MO.look)+' o\'clock.'+(R&&R.phase==='play'?' '+flagWords():''));
+  if(MO.phase==='walk'&&MO.walk) p.push('Walking: '+MO.walk.done+' of '+MO.walk.need+' steps.'); return p.join(' '); }
+function mstatText(){ if(!S.motion) return 'Motion controls are off.'; const p=['Motion controls on.']; p.push(MO.nM?'Movement readings arriving.':'No movement readings yet.'); p.push(MO.nO?'Orientation readings arriving.':'No orientation readings yet.');
+  p.push('Aim by turning '+(S.mAim?'on':'off')+'. Swing with the phone '+(S.mSwing?'on':'off')+'. Putt with the phone '+(S.mPutt?'on':'off')+'. Flick to change club '+(S.flick?'on':'off')+'. Walking '+(S.walk==='off'?'off':S.walk)+'. Sound frame: '+(S.frame==='fixed'?'fixed':'turns with you')+'.'); return p.join(' '); }
+function sw(id,on){ $(id).setAttribute('aria-checked',on?'true':'false'); }
+function syncMotion(){ sw('mMotion',S.motion); sw('mAim',S.mAim); sw('mSwing',S.mSwing); sw('mPutt',S.mPutt); sw('mFlick',S.flick); sw('mAssist',S.assist);
+  document.querySelectorAll('input[name=frame]').forEach(r=>r.checked=r.value===S.frame); document.querySelectorAll('input[name=hsrc]').forEach(r=>r.checked=r.value===S.hsrc);
+  MO.det.set({stepSens:S.stepSens}); $('motionBtn').textContent=S.motion?'Motion controls are on. Check them again':'Turn on motion controls (the phone asks: choose Allow)';
+  $('mstat').textContent=mstatText(); MO.lastBstat=''; $('bstat').textContent=bstatText(); }
+/* ---------- motion training range: aim at the flag, three swings, a putt ---------- */
+const RG={on:false,stage:'',n:0,tgt:0,onT:0,beepT:0};
+function rangeSay(t){ $('rangeText').textContent=t; say(t); }
+function rangeStart(){ unlock(); ensurePermission(); if(ts||putt1||busy) return; stopSwing(); beaconQuiet(); RG.on=true; $('rangeCtl').hidden=false; newMachines(); E.ambience('parkland',{}); rangeStage('aim'); setTimeout(()=>$('rangeNext').focus(),100); }
+function rangeStage(st){ RG.stage=st; RG.n=0; RG.onT=0; newMachines(); beaconQuiet();
+  if(st==='aim'){ if(!aimOn()){ rangeSay('Range, step 1 of 3: aiming. Aiming by turning needs motion controls on. Press Skip to go on.'); return; } recentre(true); RG.tgt=rangeTgt(); rangeSay('Range, step 1 of 3: aiming. Hold the phone in front of you. A flag bell rings. Turn your body until the bell is in the middle and you hear a steady tone. Hold it there. Three flags.'); }
+  else if(st==='swing') rangeSay('Step 2 of 3: swinging. Hold the phone upright in both hands like a golf grip, screen towards you. Keep still until you hear two quick beeps. Take it back slowly while the tone rises: a full backswing gives full power. Then swing through with a sharp strike. Three swings, nothing is scored.'+(swingOn()?'':' Swinging needs motion controls on. Press Skip to go on.'));
+  else if(st==='putt'){ rangeSay('Step 3 of 3: a putt of about 10 feet. Let the phone hang in both hands like a putter. Keep still for the beeps, swing it back gently while the tone rises, then forward through where you started. This is the pace tone for 10 feet.'+(puttOn()?'':' Putting needs motion controls on. Press Skip to go on.')); setTimeout(()=>E.paceTone(10),9000); }
+  else if(st==='done'){ rangeSay('Range complete. Well done. Start a round when you are ready. Your motion settings are saved.'); E.chime('birdie'); setTimeout(rangeEnd,3000); } }
+function rangeTgt(){ const s=Math.random()<.5?-1:1; return MOT.norm(MO.look+s*(40+Math.random()*80)); }
+function rangeNext(){ const o=['aim','swing','putt','done'],i=o.indexOf(RG.stage); rangeStage(o[Math.min(o.length-1,i+1)]); }
+function rangeEnd(){ RG.on=false; RG.stage=''; beaconQuiet(); E.backStop(); $('rangeCtl').hidden=true; newMachines(); if(R&&R.phase==='play'){ const H=G.hole(R); E.ambience(H.amb,{sea:!!H.sea||H.amb==='links',seaPan:H.sea?-.7:.6,water:H.f.some(f=>f.t==='water')}); } else E.stopAmb(); }
+function rangeTick(t){ if(RG.stage!=='aim'||!aimOn()) return; const r=beacon(t,RG.tgt,false,4);
+  if(Math.abs(r)<=4){ if(!RG.onT) RG.onT=t; else if(t-RG.onT>.6){ RG.onT=0; RG.n++; beaconQuiet(); E.chime('par');
+    if(RG.n>=3){ RG.stage='wait'; say('On the flag. Three flags found. Well done.'); setTimeout(()=>rangeStage('swing'),2200); } else { say('On the flag. Next flag.'); RG.tgt=rangeTgt(); MO.beepT=t+.8; } } } else RG.onT=0; }
+function curveWord(err){ const e=err*(S.hand==='left'?-1:1); if(Math.abs(err)<.05) return 'good tempo, straight'; return err<0?'a quick downswing, so it would curve '+(e<0?'left':'right'):'a slow downswing, so it would curve '+(e<0?'left':'right'); }
+function rangeSwingEv(ev,put){
+  if(ev.k==='address') E.ready(); else if(ev.k==='flick') E.flick(ev.dir); else if(ev.k==='back'){ if(put) E.backstroke(); E.backStart(); }
+  else if(ev.k==='level') E.backLevel(put?ev.ft/GM.PS.FULLFT:ev.power); else if(ev.k==='top') E.backStop(); else if(ev.k==='abort') E.backStop();
+  else if(ev.k==='miss'){ E.backStop(); newMachines(); say(put?'No putt: swing the phone forward through where you started. Hold still and try again.':'No strike detected. Hold still, then swing through more firmly.'); }
+  else if(ev.k==='contact'){ E.backStop();
+    if(put){ E.contact('putter'); RG.stage='wait'; const ft=r0(ev.ft); say('That putt would roll about '+ft+' feet. The target was 10. '+(Math.abs(ft-10)<=2?'Lovely pace.':ft>10?'A shorter backstroke next time.':'A longer backstroke next time.')); setTimeout(()=>rangeStage('done'),4500); return; }
+    RG.n++; const q=Math.abs(ev.err)<.04?'pure':Math.abs(ev.err)<.1?'good':'off'; E.contact('driver',q); E.whoosh(1.6,Math.max(-1,Math.min(1,ev.err*3)),'driver');
+    say('Swing '+RG.n+': '+Math.round(Math.min(ev.power,1.1)*100)+' percent power, '+curveWord(ev.err)+'.'); newMachines();
+    if(RG.n>=3){ RG.stage='wait'; setTimeout(()=>rangeStage('putt'),3500); } } }
+function motionInit(){ const T=(id,key,after)=>{ $(id).onclick=()=>{ unlock(); S[key]=!S[key]; saveS(); syncMotion(); updateAct(); if(after) after(); }; };
+  $('motionBtn').onclick=enableMotion; $('mMotion').onclick=toggleMotion; T('mAim','mAim',()=>{ beaconQuiet(); env(); say(S.mAim?'Aim by turning on.':'Aim by turning off. Use Aim left and Aim right.'); });
+  T('mSwing','mSwing',()=>say(S.mSwing?'Swing with the phone on.':'Swing with the phone off. Use tap swing.')); T('mPutt','mPutt',()=>say(S.mPutt?'Putt with the phone on.':'Putt with the phone off. Use tap putting.'));
+  T('mFlick','flick',()=>{ newMachines(); say(S.flick?'Flick to change club on.':'Flick to change club off.'); }); T('mAssist','assist',()=>say(S.assist?'Aim assist on.':'Aim assist off.'));
+  document.querySelectorAll('input[name=frame]').forEach(r=>r.onchange=()=>{ S.frame=r.value; saveS(); syncMotion(); env(); say(S.frame==='fixed'?'Sound frame fixed: sounds stay put in the room.':'Sounds turn with you.'); });
+  document.querySelectorAll('input[name=hsrc]').forEach(r=>r.onchange=()=>{ S.hsrc=r.value; saveS(); MO.yaw=new MOT.Yaw(); syncMotion(); say(S.hsrc==='compass'?'Turning measured by the compass.':'Turning measured by the gyroscope.'); });
+  $('recentreBtn').onclick=()=>{ unlock(); recentre(false); }; $('flagBtn').onclick=flagInfo; $('clubNext').onclick=()=>nextClub(1); $('clubPrev').onclick=()=>nextClub(-1);
+  $('rangeBtn').onclick=rangeStart; $('rangeNext').onclick=rangeNext; $('rangeStop').onclick=()=>{ rangeEnd(); say('Left the range.'); };
+  listen(); syncMotion(); }
+/* ---------- input ---------- */
+function down(){ unlock(); if(!R) return say('Start a round first: go to New round and choose Start round.');
+  if(R.phase==='holeDone') return next(); if(R.phase==='roundDone') return say('This round is finished. Choose Start round to play again.');
+  if(MO.phase==='walk') return skipWalk();
+  if(busy){ E.blip(); return; }
+  if(club==='putter') return puttDown();
+  if(!ts) ts=G.tsNew(); handleTs(G.tsDown(ts,perf())); startLoop(); }
+function up(){ if(ts&&!busy) handleTs(G.tsUp(ts,perf())); }
+function bindAct(el){ el.addEventListener('pointerdown',e=>{ if(e.button>0) return; lastPtr=Date.now(); e.preventDefault(); down(); });
+  el.addEventListener('pointerup',()=>up()); el.addEventListener('pointercancel',()=>up()); el.addEventListener('contextmenu',e=>e.preventDefault());
+  el.addEventListener('click',e=>{ if(Date.now()-lastPtr<800) return; down(); up(); }); }
+bindAct($('actBtn')); bindAct($('pad'));
+let spaceDown=false;
+document.addEventListener('keydown',e=>{ const tg=e.target,tag=tg.tagName; if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA') return;
+  const k=e.key; if((k===' '||k==='Enter')&&(tg===$('pad')||tg===document.body)){ e.preventDefault(); if(!e.repeat&&!spaceDown){ spaceDown=true; down(); } return; }
+  if(tag==='BUTTON'&&(k===' '||k==='Enter')) return; if(e.ctrlKey||e.metaKey||e.altKey) return;
+  const map={'1':()=>clubBtn('driver'),'2':()=>clubBtn('iron'),'3':()=>clubBtn('wedge'),'4':()=>clubBtn('putter'),ArrowLeft:()=>aim(-1),ArrowRight:()=>aim(1),i:info,w:wind,h:haz,g:readGreen,s:score,r:()=>say(last||'Nothing yet.'),Escape:cancel,f:flagInfo,b:flagInfo,c:()=>recentre(false),m:toggleMotion,k:skipWalk,x:()=>nextClub(1),z:()=>nextClub(-1),t:rangeStart,n:()=>{ if(R&&R.phase==='holeDone') next(); }};
+  const f=map[k.length===1?k.toLowerCase():k]; if(f){ e.preventDefault(); unlock(); f(); } });
+document.addEventListener('keyup',e=>{ if((e.key===' '||e.key==='Enter')&&spaceDown){ spaceDown=false; e.preventDefault(); up(); } });
+function clubBtn(c){ if(busy||ts||putt1) return; setClub(c); }
+document.querySelectorAll('[data-club]').forEach(b=>b.addEventListener('click',()=>{ unlock(); clubBtn(b.dataset.club); }));
+function aim(d){ if(!R||R.phase!=='play') return say('Start a round first.'); if(aimOn()) return say('Aim follows the way you face. '+flagWords()+' '+aimWords()+' To aim with buttons instead, switch off Aim by turning.'); R.cur.aim+=d*(club==='putter'?3:5); R.cur.aim=G.clamp(R.cur.aim,club==='putter'?-72:-60,club==='putter'?72:60); say(aimWords()); }
+function info(){ if(!R) return say('No round yet. Go to New round and choose Start round.'); if(R.phase!=='play') return say(last); say(fullInfo()); }
+function wind(){ if(!R) return say('No round yet.'); say(G.onGreen(R)?'On the green, the tone shows the grain. '+G.windWords(R):G.windWords(R)+' The higher the wind tone, the more it is against you.'); }
+function haz(){ if(!R||R.phase!=='play') return say('No hole in play.'); say('From where you are, along the line to the pin. '+G.hazards(R).join('. ')+'.'); }
+function score(){ if(!R) return say('No round yet.'); let x=R.players.map((p,i)=>{ const t=G.total(R,i); return p.name+': '+(t.holes?G.vsText(t.vs)+' after '+t.holes+(t.holes===1?' hole':' holes')+', '+t.strokes+' strokes':'no holes finished'); }).join('. ')+'. ';
+  if(R.phase==='play') x+=G.player(R).name+' has played '+R.cur.strokes+' on hole '+(R.h+1)+', a par '+G.hole(R).par+'.'; say(x); }
+function cancel(){ if(ts||putt1||MO.locked){ stopSwing(); say('Swing cancelled. No stroke.'); } }
+$('aimL').onclick=()=>aim(-1); $('aimR').onclick=()=>aim(1); $('infoBtn').onclick=info; $('windBtn').onclick=wind; $('hazBtn').onclick=haz; $('breakBtn').onclick=readGreen; $('scoreBtn').onclick=score; $('repeatBtn').onclick=()=>say(last||'Nothing yet.'); $('cancelBtn').onclick=cancel;
+$('soundBtn').onclick=()=>{ unlock(); ensurePermission(); E.ready(); say('Sound and speech are on. '+(R?fullInfo():'Choose a course in New round, then Start round.')); };
+$('startBtn').onclick=()=>{ if(R&&R.phase==='play'&&(R.h>0||R.cur.strokes>0)&&!confirm('Start a new round? The current round will be lost.')) return; R=null; startRound(false); };
+$('resumeBtn').onclick=()=>startRound(true);
+
+/* ---------- settings ---------- */
+const bindSel=(id,key,fn)=>{ const el=$(id); el.value=String(S[key]); el.addEventListener('change',()=>{ S[key]=el.type==='checkbox'?el.checked:el.value; saveS(); fn&&fn(); }); };
+const bindChk=(id,key,fn)=>{ const el=$(id); el.checked=!!S[key]; el.addEventListener('change',()=>{ S[key]=el.checked; saveS(); fn&&fn(); }); };
+bindChk('soundOn','sound',()=>{ E.setOn(S.sound); say(S.sound?'Sound on.':'Sound off. Speech carries on.'); });
+bindChk('hapticsOn','haptics',()=>{ say(S.haptics?(canVib?'Vibration on.':'Vibration on, but this browser cannot vibrate, so you will hear everything instead.'):'Vibration off.'); if(S.haptics) vib(40); });
+bindSel('sens','sens',()=>newMachines()); bindSel('psens','psens',()=>newMachines()); bindSel('walk','walk'); bindSel('holes','holes',()=>{ if(R) say(S.holes==='straight'?'Every hole now starts straight ahead.':'Each hole now points a different way.'); }); bindSel('stepSens','stepSens',()=>MO.det.set({stepSens:S.stepSens})); bindSel('rate','rate',()=>{ S.rate=+S.rate; say('Speech speed changed.'); }); bindSel('msgs','msgs',()=>say('Messages will now be read by '+$('msgs').selectedOptions[0].textContent+'.'));
+bindSel('diff','diff',()=>{ if(R) R.diff=S.diff; }); bindSel('hand','hand',()=>{ if(R) R.hand=S.hand; }); bindChk('hints','hints'); bindChk('intros','intros'); bindChk('autoClub','autoClub');
+bindSel('course','course',()=>{ $('courseAbout').textContent=G.COURSES[S.course].about; }); $('courseAbout').textContent=G.COURSES[S.course].about;
+bindSel('np','np',showNames); function showNames(){ for(let i=1;i<=4;i++) $('name'+i).closest('label').hidden=i>(+S.np||1); } showNames();
+for(let i=1;i<=4;i++){ const el=$('name'+i); el.value=S.names[i-1]&&!/^Player \d$/.test(S.names[i-1])?S.names[i-1]:''; el.placeholder='Player '+i; el.addEventListener('change',()=>{ S.names[i-1]=el.value.trim()||('Player '+i); saveS(); }); }
+document.querySelectorAll('input[name=out]').forEach(el=>{ el.checked=el.value===S.out; el.addEventListener('change',()=>{ S.out=el.value; saveS(); E.setMono(S.out==='mono'); env(); say(S.out==='mono'?'Mono. Left and right are spoken instead.':'Stereo.'); }); });
+$('hapticNote').textContent=canVib?'This browser can vibrate.':'This browser cannot vibrate (Safari on iPhone never lets web pages vibrate), so every vibration also has a sound.';
+document.addEventListener('visibilitychange',()=>{ if(document.hidden){ if(ts||putt1||MO.locked) stopSwing(); beaconQuiet(); save(); } else if(R&&unlocked){ unlock(); env(); } });
+showBest(); resumeLabel(); updateAct();
+motionInit();
+window.__gbe={G,E,S,GM,MOT,MO,RG,get R(){ return R; },set R(v){ R=v; },down,up,get club(){ return club; },get busy(){ return busy; },setClub,say,get last(){ return last; },onMotion,onOrient,readGreen,pinB,mtick,syncMotion,recentre};
+})();
+
+</script>
+</body>
+</html>
